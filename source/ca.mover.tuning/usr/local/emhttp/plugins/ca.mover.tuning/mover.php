@@ -24,7 +24,7 @@ function startMover() {
 }
 
 if ( ! $cron && $cfg['moveFollows'] != 'follows') {
-	logger("manually starting mover");
+	logger("Manually starting mover");
 	startMover();
 	exit();
 }
