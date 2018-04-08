@@ -37,7 +37,8 @@ The 'post-install' script
 -->
 <FILE Run="/bin/bash">
 <INLINE>
-if [ ! -f /usr/local/sbin/mover.old ]; then
+if [ ! -f /usr/local/sbin/mover.old ]
+then
   mv /usr/local/sbin/mover /usr/local/sbin/mover.old
 fi
 mv /usr/local/emhttp/plugins/&name/mover /usr/local/sbin/mover
