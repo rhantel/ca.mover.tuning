@@ -38,7 +38,7 @@ The 'post-install' script
 <FILE Run="/bin/bash">
 <INLINE>
 if [[ ! -f /usr/local/sbin/mover.old ]]; then mv /usr/local/sbin/mover /usr/local/sbin/mover.old; fi
-mv /usr/local/emhttp/plugins/&name;/mover /usr/local/sbin/mover
+cp /usr/local/emhttp/plugins/&name;/mover /usr/local/sbin/mover
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been installed."
@@ -54,7 +54,6 @@ The 'remove' script.
 -->
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
-rm /usr/local/sbin/mover
 mv /usr/local/sbin/mover.old /usr/local/sbin/mover
 removepkg &name;-&version;-x86_64-1
 rm -rf &plugdir;
