@@ -42,7 +42,7 @@ cp /usr/local/emhttp/plugins/&name;/mover /usr/local/sbin/mover
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been installed."
-echo " Copyright 2017, Andrew Zawadzki"
+echo " Copyright 2018, Andrew Zawadzki"
 echo " Version: &version;"
 echo "----------------------------------------------------"
 echo ""
