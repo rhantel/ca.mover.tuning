@@ -14,13 +14,19 @@ function logger($string) {
 	}
 }
 
-function startMover() {
-	$descriptorspec = array(
-		0 => array("pipe", "r"),  // stdin is a pipe that the child will read from
-		1 => array("pipe", "w"),  // stdout is a pipe that the child will write to
-		2 => array("file", "/tmp/error-output.txt", "a") // stderr is a file to write to
-	);
-	proc_open("/usr/local/sbin/mover.old",$descriptorspec,$pipes);
+function startMover($options="") {
+	clearstatcache();
+  $pid = @file_get_contents("/var/run/mover.pid");
+	if ($pid) {
+		logger("Mover already running");
+		exit();
+	}
+	exec("/usr/local/sbin/mover.old $options");
+}
+
+if ( $argv[2] ) {
+	startMover($argv[2]);
+	exit();
 }
 
 if ( ! $cron && $cfg['moveFollows'] != 'follows') {
@@ -40,8 +46,8 @@ if ( $cfg['parity'] == 'no' && $vars['mdResyncPos'] ) {
 }
 
 $usedSpace = trim(exec("df --output=pcent /mnt/cache | tail -n 1 | tr -d '%'"));
-if ( (100-$cfg['threshold']) < $usedSpace ) {
-	logger("Cache used space threshhold ({$cfg['threshold']}) not exceeded.  Free Space: $usedSpace.  Not moving files");
+if ( $cfg['threshold'] > $usedSpace ) {
+	logger("Cache used space threshhold ({$cfg['threshold']}) not exceeded.  Used Space: $usedSpace.  Not moving files");
 	exit();
 }
 logger("Starting Mover");

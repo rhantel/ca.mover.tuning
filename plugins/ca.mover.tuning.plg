@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2018.04.08">
-<!ENTITY md5       "add74d43ed8430038e04af77c42c982d">
+<!ENTITY version   "2018.04.12">
+<!ENTITY md5       "2ec42a648ece53cfc47985163d350390">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "Squidly271/ca.mover.tuning">
@@ -13,6 +13,11 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;">
 
 <CHANGES>
+###2018.04.12
+- Fix logic error on freespace calculation
+- Prevent mover running again if move already in progress
+- Allow mover to stop (mover stop)
+
 ###2018.04.08
 - Initial Release
 </CHANGES>
