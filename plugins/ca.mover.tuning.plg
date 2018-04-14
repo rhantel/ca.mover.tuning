@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2018.04.12">
-<!ENTITY md5       "2ec42a648ece53cfc47985163d350390">
+<!ENTITY version   "2018.04.14">
+<!ENTITY md5       "f3b98374e9725f1f661d92dcafea0ece">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "Squidly271/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;">
 
 <CHANGES>
+###2018.04.14
+- Add in forced mover schedule
+
 ###2018.04.12
 - Fix logic error on freespace calculation
 - Prevent mover running again if move already in progress
@@ -63,6 +66,7 @@ mv /usr/local/sbin/mover.old /usr/local/sbin/mover
 removepkg &name;-&version;-x86_64-1
 rm -rf &plugdir;
 rm -rf /boot/config/plugins/&name;
+/usr/local/sbin/update_cron
 </INLINE>
 </FILE> 
 </PLUGIN>

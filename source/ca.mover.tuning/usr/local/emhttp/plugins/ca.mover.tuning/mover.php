@@ -15,17 +15,26 @@ function logger($string) {
 }
 
 function startMover($options="") {
+	global $vars, $cfg;
+	
 	clearstatcache();
   $pid = @file_get_contents("/var/run/mover.pid");
 	if ($pid) {
 		logger("Mover already running");
 		exit();
 	}
+	if ( $options == "force") {
+		$options = "";
+		if ( $cfg['forceParity'] == "no" && $vars['mdResyncPos'] ) {
+			logger("Parity Check / Rebuild in Progress.  Not running forced move");
+			exit();
+		}
+	}
 	exec("/usr/local/sbin/mover.old $options");
 }
 
 if ( $argv[2] ) {
-	startMover($argv[2]);
+	startMover(trim($argv[2]));
 	exit();
 }
 
