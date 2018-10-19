@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2018.04.14">
-<!ENTITY md5       "f3b98374e9725f1f661d92dcafea0ece">
+<!ENTITY version   "2018.08.19">
+<!ENTITY md5       "2626af900a10aeeb8e4c0445baa58de9">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "Squidly271/ca.mover.tuning">
@@ -28,7 +28,7 @@
 <FILE Run="/bin/bash">
 <INLINE>
 # Remove old 'source' files
-rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null|grep -v '&version;')
+rm -f $(ls /boot/config/plugins/&name;/&name;*.txz 2>/dev/null &#124; grep -v '&version;')
 </INLINE>
 </FILE>
 
