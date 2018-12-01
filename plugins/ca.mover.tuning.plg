@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2018.10.19">
-<!ENTITY md5       "2626af900a10aeeb8e4c0445baa58de9">
+<!ENTITY version   "2018.12.01">
+<!ENTITY md5       "250bcfe60e91a535ce0e1ab99db89b56">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "Squidly271/ca.mover.tuning">
@@ -13,6 +13,12 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;">
 
 <CHANGES>
+###2018.12.01
+- Accept Stop parameter on command line
+
+###2018.10.19
+- Fix broken pipe
+
 ###2018.04.14
 - Add in forced mover schedule
 

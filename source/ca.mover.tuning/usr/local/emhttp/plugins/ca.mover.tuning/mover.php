@@ -17,11 +17,13 @@ function logger($string) {
 function startMover($options="") {
 	global $vars, $cfg;
 	
-	clearstatcache();
-  $pid = @file_get_contents("/var/run/mover.pid");
-	if ($pid) {
-		logger("Mover already running");
-		exit();
+	if ( $options != "stop" ) {
+		clearstatcache();
+		$pid = @file_get_contents("/var/run/mover.pid");
+		if ($pid) {
+			logger("Mover already running");
+			exit();
+		}
 	}
 	if ( $options == "force") {
 		$options = "";
