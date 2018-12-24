@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2018.12.01">
-<!ENTITY md5       "250bcfe60e91a535ce0e1ab99db89b56">
+<!ENTITY version   "2018.12.24">
+<!ENTITY md5       "a6a03c3c0ded5b560a13d37b047cdf7d">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "Squidly271/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;">
 
 <CHANGES>
+###2018.12.24
+- Change text on disabling mover running on a schedule for clarity
+
 ###2018.12.01
 - Accept Stop parameter on command line
 
