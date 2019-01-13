@@ -2,17 +2,20 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2018.12.24">
-<!ENTITY md5       "a6a03c3c0ded5b560a13d37b047cdf7d">
+<!ENTITY version   "2019.01.13">
+<!ENTITY md5       "9d126921c9f399a1f399521dc5c2349f">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "Squidly271/ca.mover.tuning">
 <!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/master/plugins/&name;.plg">
 ]>
 
-<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;">
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2019.01.13
+- Update icons
+
 ###2018.12.24
 - Change text on disabling mover running on a schedule for clarity
 
