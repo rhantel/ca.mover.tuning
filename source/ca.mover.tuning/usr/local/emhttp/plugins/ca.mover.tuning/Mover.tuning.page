@@ -56,6 +56,14 @@ Let scheduled mover run during a parity check / rebuild:
 
 > If a parity check or disk rebuild is in progress, this will prevent mover from running
 
+Force turbo write on during mover:
+: <select name='enableTurbo' size='1' class='narrow'>
+<?=mk_option($cfg['enableTurbo'],"no","No")?>
+<?=mk_option($cfg['enableTurbo'],"yes","Yes")?>
+</select>
+
+> Forces unRaid to switch to turbo write mode (reconstruct write) when mover is running
+
 Log when not moving due to rules:
 : <select name='logging' size='1' class='narrow'>
 <?=mk_option($cfg['logging'],"no",'No')?>

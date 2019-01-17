@@ -32,7 +32,15 @@ function startMover($options="") {
 			exit();
 		}
 	}
+	if ( $cfg['enableTurbo'] == "yes" ) {
+		logger("Forcing turbo write on");
+		exec("/usr/local/sbin/mdcmd set md_write_method 1");
+	}
 	exec("/usr/local/sbin/mover.old $options");
+	if ( $cfg['enableTurbo'] == "yes" ) {
+		logger("Restoring original turbo write mode");
+		exec("/usr/local/sbin/mdcmd set md_write_method {$vars['md_write_method']}");
+	}	
 }
 
 if ( $argv[2] ) {
@@ -61,6 +69,10 @@ if ( $cfg['threshold'] > $usedSpace ) {
 	logger("Cache used space threshhold ({$cfg['threshold']}) not exceeded.  Used Space: $usedSpace.  Not moving files");
 	exit();
 }
+
+
+
 logger("Starting Mover");
 startMover();
+
 ?>
