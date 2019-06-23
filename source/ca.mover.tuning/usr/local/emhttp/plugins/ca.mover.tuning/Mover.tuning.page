@@ -51,8 +51,13 @@ Priority for mover process
 <?=mk_option($cfg['moverNice'],"0","Normal")?>
 <?=mk_option($cfg['moverNice'],"5","Low")?>
 <?=mk_option($cfg['moverNice'],"19","Very Low")?>
-<?=mk_option($cfg['moverNice'],"-5","High")?>
-<?=mk_option($cfg['moverNice'],"-15","Very High")?>
+</select>
+
+Priority for disk I/O
+: <select name='moverIO' size='1' class='narrow'>
+<?=mk_option($cfg['moverIO'],"-c 2 -n 0","Normal")?>
+<?=mk_option($cfg['moverIO'],"-c 2 -n 7","Low")?>
+<?=mk_option($cfg['moverIO'],"-c 3","Idle")?>
 </select>
 
 Only move at this threshold of used cache space:
