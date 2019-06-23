@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2019.01.17">
-<!ENTITY md5       "251058376c6050208b7ab3e10ea091a3">
+<!ENTITY version   "2019.06.23">
+<!ENTITY md5       "8f8b5200bf376855cc037ba125d5284c">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "Squidly271/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2019.06.23
+- Add in option to set priority
+- Utilize CA update check
+
 ###2019.01.17
 - Add option to force turbo write mode during mover
 

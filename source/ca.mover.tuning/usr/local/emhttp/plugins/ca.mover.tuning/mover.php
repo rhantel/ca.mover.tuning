@@ -36,7 +36,9 @@ function startMover($options="") {
 		logger("Forcing turbo write on");
 		exec("/usr/local/sbin/mdcmd set md_write_method 1");
 	}
-	exec("/usr/local/sbin/mover.old $options");
+	$niceLevel = $cfg['moverNice'] ?: "0";
+	logger("nice -n $niceLevel /usr/local/sbin/mover.old $options");
+	exec("nice -n $niceLevel /usr/local/sbin/mover.old $options");
 	if ( $cfg['enableTurbo'] == "yes" ) {
 		logger("Restoring original turbo write mode");
 		exec("/usr/local/sbin/mdcmd set md_write_method {$vars['md_write_method']}");

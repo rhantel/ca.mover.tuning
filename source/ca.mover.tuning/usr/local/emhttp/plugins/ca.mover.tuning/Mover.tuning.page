@@ -15,6 +15,12 @@ $cfg = parse_plugin_cfg($plugin);
 $cronDisabled = ($cfg['force'] == "no") ? "disabled" : "";
 ?>
 <script>
+$(function(){
+	if ( typeof caPluginUpdateCheck === "function" ) {
+		caPluginUpdateCheck("ca.mover.tuning.plg",{name:"Mover Tuning",element:".moverUpdate"});
+	}
+});
+	
 $.fn.toggleAttr = function(attr) {
   this.each(function() {
 		var $this = $(this);
@@ -28,6 +34,7 @@ function updateCron() {
 	$.post("/plugins/ca.mover.tuning/updateCron.php",{cronEnabled:cronEnabled,cron:cron});
 }
 </script>
+<div class='moverUpdate'></div>
 <form markdown="1" method="POST" action="/update.php" target="progressFrame" onsubmit="updateCron();">
 <input type="hidden" name="#file" value="<?=$plugin?>/<?=$plugin?>.cfg">
 Disable Mover running on a schedule:
@@ -38,6 +45,15 @@ Disable Mover running on a schedule:
 *Note that setting this to yes effectively disables this plugin
 
 > This will prevent mover from running at the schedule set in Mover Settings.  You will only be able to run mover by manually invoking it.
+
+Priority for mover process
+: <select name='moverNice' size='1' class='narrow'>
+<?=mk_option($cfg['moverNice'],"0","Normal")?>
+<?=mk_option($cfg['moverNice'],"5","Low")?>
+<?=mk_option($cfg['moverNice'],"19","Very Low")?>
+<?=mk_option($cfg['moverNice'],"-5","High")?>
+<?=mk_option($cfg['moverNice'],"-15","Very High")?>
+</select>
 
 Only move at this threshold of used cache space:
 : <select name="threshold" size="1" class='narrow'>
