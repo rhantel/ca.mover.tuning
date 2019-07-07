@@ -60,6 +60,8 @@ Priority for disk I/O
 <?=mk_option($cfg['moverIO'],"-c 3","Idle")?>
 </select>
 
+> The above two options set the priority for the mover process.  Setting these options may help with circumstances where when mover runs other applications may pause or buffer.  Note that moving the files may take longer when setting these options
+
 Only move at this threshold of used cache space:
 : <select name="threshold" size="1" class='narrow'>
 <?for ($t=0;$t<100;$t+=5):?>
