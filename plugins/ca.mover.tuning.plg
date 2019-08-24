@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2019.07.07">
-<!ENTITY md5       "2eb12e9059403ec1c0e7e29e731615f2">
+<!ENTITY version   "2019.08.23">
+<!ENTITY md5       "dc528983b671748ecb3e94aff848c1c4">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "Squidly271/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2019.08.23
+- Respect mover logging setting in Mover Settings
+
 ###2019.07.07
 - Add in help text to priority settings
 
