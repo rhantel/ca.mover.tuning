@@ -94,7 +94,6 @@ The 'remove' script.
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 mv /usr/local/sbin/mover.old /usr/local/sbin/mover
-rm -rf /usr/local/sbin/age_mover
 removepkg &name;-&version;-x86_64-1
 rm -rf &plugdir;
 rm -rf /boot/config/plugins/&name;
