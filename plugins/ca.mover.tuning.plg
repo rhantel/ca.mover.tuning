@@ -1,18 +1,20 @@
 <?xml version='1.0' standalone='yes'?>
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
-<!ENTITY author    "Andrew Zawadzki">
-<!ENTITY version   "2019.08.23">
+<!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
+<!ENTITY version   "2020.02.28">
 <!ENTITY md5       "dc528983b671748ecb3e94aff848c1c4">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
-<!ENTITY github    "Squidly271/ca.mover.tuning">
+<!ENTITY github    "hugenbd/ca.mover.tuning">
 <!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/master/plugins/&name;.plg">
 ]>
 
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2020.02.28
+- Added ability to move based on age of file - Days old.
 ###2019.08.23
 - Respect mover logging setting in Mover Settings
 
@@ -75,6 +77,7 @@ The 'post-install' script
 <INLINE>
 if [[ ! -f /usr/local/sbin/mover.old ]]; then mv /usr/local/sbin/mover /usr/local/sbin/mover.old; fi
 cp /usr/local/emhttp/plugins/&name;/mover /usr/local/sbin/mover
+cp /usr/local/emhttp/plugins/&name;/age_mover /usr/local/sbin/age_mover
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been installed."
@@ -91,6 +94,7 @@ The 'remove' script.
 <FILE Run="/bin/bash" Method="remove">
 <INLINE>
 mv /usr/local/sbin/mover.old /usr/local/sbin/mover
+rm -rf /usr/local/sbin/age_mover
 removepkg &name;-&version;-x86_64-1
 rm -rf &plugdir;
 rm -rf /boot/config/plugins/&name;
