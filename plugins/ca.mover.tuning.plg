@@ -78,7 +78,6 @@ The 'post-install' script
 <INLINE>
 if [[ ! -f /usr/local/sbin/mover.old ]]; then mv /usr/local/sbin/mover /usr/local/sbin/mover.old; fi
 cp /usr/local/emhttp/plugins/&name;/mover /usr/local/sbin/mover
-chmod 777 /usr/local/emhttp/plugins/&name;/age_mover
 echo ""
 echo "----------------------------------------------------"
 echo " &name; has been installed."
