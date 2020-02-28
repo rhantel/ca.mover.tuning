@@ -42,8 +42,8 @@ function startMover($options="") {
                 $niceLevel = $cfg['moverNice'] ?: "0";
                 $ioLevel = $cfg['moverIO'] ?: "-c 2 -n 0";
                 $ageLevel = $cfg['daysold'];
-                logger("ionice $ioLevel nice -n $niceLevel /usr/local/sbin/age_mover start $ageLevel");
-                passthru("ionice $ioLevel nice -n $niceLevel /usr/local/sbin/age_mover start $ageLevel");
+                logger("ionice $ioLevel nice -n $niceLevel /usr/local/emhttp/plugins/ca.mover.tuning/age_mover start $ageLevel");
+                passthru("ionice $ioLevel nice -n $niceLevel /usr/local/emhttp/plugins/ca.mover.tuning/age_mover start $ageLevel");
 
         }
         else {
