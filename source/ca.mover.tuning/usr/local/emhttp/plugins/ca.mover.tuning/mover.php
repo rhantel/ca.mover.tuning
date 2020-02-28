@@ -36,14 +36,30 @@ function startMover($options="") {
 		logger("Forcing turbo write on");
 		exec("/usr/local/sbin/mdcmd set md_write_method 1");
 	}
-	$niceLevel = $cfg['moverNice'] ?: "0";
-	$ioLevel = $cfg['moverIO'] ?: "-c 2 -n 0";
-	logger("ionice $ioLevel nice -n $niceLevel /usr/local/sbin/mover.old $options");
-	passthru("ionice $ioLevel nice -n $niceLevel /usr/local/sbin/mover.old $options");
-	if ( $cfg['enableTurbo'] == "yes" ) {
-		logger("Restoring original turbo write mode");
-		exec("/usr/local/sbin/mdcmd set md_write_method {$vars['md_write_method']}");
-	}	
+	
+        if ($cfg['age'] == "yes" ) {
+
+                $niceLevel = $cfg['moverNice'] ?: "0";
+                $ioLevel = $cfg['moverIO'] ?: "-c 2 -n 0";
+                $ageLevel = $cfg['daysold'];
+                logger("ionice $ioLevel nice -n $niceLevel /usr/local/sbin/age_mover start $ageLevel");
+                passthru("ionice $ioLevel nice -n $niceLevel /usr/local/sbin/age_mover start $ageLevel");
+
+        }
+        else {
+
+                $niceLevel = $cfg['moverNice'] ?: "0";
+                $ioLevel = $cfg['moverIO'] ?: "-c 2 -n 0";
+                logger("ionice $ioLevel nice -n $niceLevel /usr/local/sbin/mover.old $options");
+                passthru("ionice $ioLevel nice -n $niceLevel /usr/local/sbin/mover.old $options");
+
+        }
+
+        if ( $cfg['enableTurbo'] == "yes" ) {
+                logger("Restoring original turbo write mode");
+                exec("/usr/local/sbin/mdcmd set md_write_method {$vars['md_write_method']}");
+        }
+	
 }
 
 if ( $argv[2] ) {
