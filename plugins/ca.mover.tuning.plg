@@ -3,6 +3,7 @@
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
 <!ENTITY version   "2020.02.28">
+<!ENTITY md5       "8a910c5574d1b38154deccd57a784a19">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -67,7 +68,7 @@ The 'source' file.
 -->
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;-x86_64-1.txz" Run="upgradepkg --install-new">
 <URL>https://raw.github.com/&github;/master/archive/&name;-&version;-x86_64-1.txz</URL>
-<!--<MD5>&md5;</MD5>-->
+<MD5>&md5;</MD5>
 </FILE>
 
 <!--
