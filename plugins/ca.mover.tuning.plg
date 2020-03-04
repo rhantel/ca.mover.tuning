@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2020.02.28">
-<!ENTITY md5       "dab24c9a2aa1a8563fc0059d081bf92d">
+<!ENTITY version   "2020.03.04">
+<!ENTITY md5       "152643382b3bb07cbe1ffd11422a0729">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2020.03.04
+- updated mover.php to handle a stop with age
+- allow cache preferred to work with age_mover and dates set.
+  
 ###2020.02.28
 - Added ability to move based on age of file - Days old.
   
