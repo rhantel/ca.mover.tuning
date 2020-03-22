@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2020.03.22
+- Add 1-4 for days old selection.
+- Disable days old selection if "No" selected for move based on age.
+
 ###2020.03.04
 - updated mover.php to handle a stop with age
 - allow cache preferred to work with age_mover and dates set.
