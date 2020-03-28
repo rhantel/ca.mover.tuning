@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2020.03.22">
-<!ENTITY md5       "2e7eaf0442494b0232682ee00e484854">
+<!ENTITY version   "2020.03.28">
+<!ENTITY md5       "25eb0440c1754504420b084063321469">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2020.03.28
+- Added the ability to leave small files on cache. (ignore files smaller than a user selected size).
+
 ###2020.03.22
 - Add 1-4 for days old selection.
 - Disable days old selection if "No" selected for move based on age.
