@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2020.03.28">
-<!ENTITY md5       "25eb0440c1754504420b084063321469">
+<!ENTITY version   "2020.04.08">
+<!ENTITY md5       "67616d9c2a4cce6c49d87f7d6254f987  ">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2020.04.08
+- Removed echo's from age_mover to not trigger emails to admin.
+- Added check in age_mover to verify input variables are supplied.
+  
 ###2020.03.28
 - Added the ability to leave small files on cache. (ignore files smaller than a user selected size).
 
