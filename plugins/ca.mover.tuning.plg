@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2020.04.08">
-<!ENTITY md5       "67616d9c2a4cce6c49d87f7d6254f987">
+<!ENTITY version   "2020.05.08">
+<!ENTITY md5       "0562b17b5fe86a998d8f10b5d27395e2">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,11 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+###2020.05.08
+- Sparseness (.1 as an example)
+- Ignore based on list inside of a file (provide a path) (ignore filelist)
+- Ignore based on file types (comma seperated list of file extension.  .mkv,.mp4,.txt 
+  
 ###2020.04.08
 - Removed echo's from age_mover to not trigger emails to admin.
 - Added check in age_mover to verify input variables are supplied.
