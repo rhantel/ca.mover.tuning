@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2020.05.08">
-<!ENTITY md5       "0562b17b5fe86a998d8f10b5d27395e2">
+<!ENTITY version   "2020.05.11">
+<!ENTITY md5       "6f243481392087690bbea0335dcd5daf">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+ ###2020.05.08
+- Put quotes around the share name to allow for spaces in the name.
+- Fixed spelling error on config page for greater.
+  
 ###2020.05.08
 - Sparseness (.1 as an example)
 - Ignore based on list inside of a file (provide a path) (ignore filelist)
