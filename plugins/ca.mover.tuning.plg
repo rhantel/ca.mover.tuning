@@ -13,7 +13,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
- ###2020.05.08
+ ###2020.05.11
 - Put quotes around the share name to allow for spaces in the name.
 - Fixed spelling error on config page for greater.
   
