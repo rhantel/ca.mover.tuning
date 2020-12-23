@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2020.05.11">
-<!ENTITY md5       "6f243481392087690bbea0335dcd5daf">
+<!ENTITY version   "2020.12.23">
+<!ENTITY md5       "d7069479e8077fab93a23d13e575dcd2">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
 
 <CHANGES>
+ ###2020.12.23
+- Initial 6.9RC2 udpated package
+ 
  ###2020.05.11
 - Put quotes around the share name to allow for spaces in the name.
 - Fixed spelling error on config page for greater.
@@ -25,59 +28,9 @@
 ###2020.04.08
 - Removed echo's from age_mover to not trigger emails to admin.
 - Added check in age_mover to verify input variables are supplied.
-  
-###2020.03.28
-- Added the ability to leave small files on cache. (ignore files smaller than a user selected size).
 
-###2020.03.22
-- Add 1-4 for days old selection.
-- Disable days old selection if "No" selected for move based on age.
+ ### See previous releases for earlier notes...
 
-###2020.03.04
-- updated mover.php to handle a stop with age
-- allow cache preferred to work with age_mover and dates set.
-  
-###2020.02.28
-- Added ability to move based on age of file - Days old.
-  
-###2019.08.23
-- Respect mover logging setting in Mover Settings
-
-###2019.07.07
-- Add in help text to priority settings
-
-###2019.06.23a
-- Add in option to set I/O priority
-
-###2019.06.23
-- Add in option to set priority
-- Utilize CA update check
-
-###2019.01.17
-- Add option to force turbo write mode during mover
-
-###2019.01.13
-- Update icons
-
-###2018.12.24
-- Change text on disabling mover running on a schedule for clarity
-
-###2018.12.01
-- Accept Stop parameter on command line
-
-###2018.10.19
-- Fix broken pipe
-
-###2018.04.14
-- Add in forced mover schedule
-
-###2018.04.12
-- Fix logic error on freespace calculation
-- Prevent mover running again if move already in progress
-- Allow mover to stop (mover stop)
-
-###2018.04.08
-- Initial Release
 </CHANGES>
 
 <FILE Run="/bin/bash">
