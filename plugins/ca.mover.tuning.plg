@@ -3,7 +3,7 @@
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
 <!ENTITY version   "2020.12.23">
-<!ENTITY md5       "d7069479e8077fab93a23d13e575dcd2">
+<!ENTITY md5       "a4ed963e4bb1f873b27f427fb22ec799">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -15,6 +15,7 @@
 <CHANGES>
  ###2020.12.23
 - Initial 6.9RC2 udpated package
+- Invoke mover if even only 1 cache pool is over the requested threshold.
  
  ###2020.05.11
 - Put quotes around the share name to allow for spaces in the name.
