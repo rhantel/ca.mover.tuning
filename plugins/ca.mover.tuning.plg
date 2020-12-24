@@ -14,8 +14,10 @@
 
 <CHANGES>
  ###2020.12.23
+ - ******** DO NOT INSTALL ON 6.8*********
 - Initial 6.9RC2 udpated package
 - Invoke mover if even only 1 cache pool is over the requested threshold.
+- ******** DO NOT INSTALL ON 6.8*********
  
  ###2020.05.11
 - Put quotes around the share name to allow for spaces in the name.
