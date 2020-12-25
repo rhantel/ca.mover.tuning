@@ -10,7 +10,7 @@
 <!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/master/plugins/&name;.plg">
 ]>
 
-<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music">
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
  ###2020.12.23
