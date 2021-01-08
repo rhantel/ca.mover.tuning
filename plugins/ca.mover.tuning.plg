@@ -58,7 +58,8 @@
   {
     echo "********************************************************************\n";
     echo "\n";
-    echo "Community Applications Requires unRaid version 6.9.0 or greater to run\n";
+    echo "Community Applications Requires unRaid version 6.9.0-rc2 or greater to run\n";
+    echo "Current Version: $version \n";
     echo "\n";
     echo "********************************************************************\n";
     exit(1);
