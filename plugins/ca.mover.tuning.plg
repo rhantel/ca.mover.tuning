@@ -52,8 +52,9 @@
 <![CDATA[
 <?
   $version = parse_ini_file("/etc/unraid-version");
-  
-  if ( version_compare($version['version'],"6.9.0", "<") )
+  echo "$version \n";
+
+  if ( version_compare($version['version'],"6.9.0-rc2", "<") )
   {
     echo "********************************************************************\n";
     echo "\n";
