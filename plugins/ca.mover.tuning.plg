@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2020.12.23">
-<!ENTITY md5       "a4ed963e4bb1f873b27f427fb22ec799">
+<!ENTITY version   "2021.01.08">
+<!ENTITY md5       "f4726b32ba1ad646c9e9ec2517a79095">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,13 +13,23 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
- ###2020.12.23
- - ******** DO NOT INSTALL ON 6.8*********
+###2021.01.08
+- Added version check to Install script.
+- Removed threshold percent check in mover perl script.
+- Added threshold percent check to age_mover bash script.
+- age_mover bash script now check for global threshold percent or the a manual entry in the ca.mover.tuning.cfg file. (example: /boot/config/plugins/ca.mover.tuning   cachetv="65")  
+     - "cachetv" being the name of the pool.
+     - if using single digits leading zero required. (i.e. cachetv="01" for 1 percent)
+- Removed cache disk check in perl script to remove warning on scheduler page.
+- Several hard coded echo statements to help in trouble shooting/debug.  These will be removed later but may cause an email to be generated and sent to you.
+ 
+###2020.12.23
+- ******** DO NOT INSTALL ON 6.8*********
 - Initial 6.9RC2 udpated package
 - Invoke mover if even only 1 cache pool is over the requested threshold.
 - ******** DO NOT INSTALL ON 6.8*********
  
- ###2020.05.11
+###2020.05.11
 - Put quotes around the share name to allow for spaces in the name.
 - Fixed spelling error on config page for greater.
   
@@ -32,10 +42,32 @@
 - Removed echo's from age_mover to not trigger emails to admin.
 - Added check in age_mover to verify input variables are supplied.
 
- ### See previous releases for earlier notes...
+### See previous releases for earlier notes...
 
 </CHANGES>
 
+<!-- The 'pre-install' script. -->
+<FILE Run="/usr/bin/php">
+<INLINE>
+<![CDATA[
+<?
+  $version = parse_ini_file("/etc/unraid-version");
+  
+  if ( version_compare($version['version'],"6.9.0", "<") )
+  {
+    echo "********************************************************************\n";
+    echo "\n";
+    echo "Community Applications Requires unRaid version 6.9.0 or greater to run\n";
+    echo "\n";
+    echo "********************************************************************\n";
+    exit(1);
+  }
+ ?>
+]]>
+</INLINE>
+</FILE>
+ 
+ 
 <FILE Run="/bin/bash">
 <INLINE>
 # Remove old 'source' files
