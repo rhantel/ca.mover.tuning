@@ -52,13 +52,14 @@
 <![CDATA[
 <?
   $version = parse_ini_file("/etc/unraid-version");
+  $displayversion = $version['version'];
+  echo "$displayversion \n";
 
   if ( version_compare($version['version'],"6.9.0-rc2", "<") )
   {
     echo "********************************************************************\n";
     echo "\n";
     echo "CA Mover Tuning Requires unRaid version 6.9.0-rc2 or greater to run\n";
-    echo "Current Version: $version['version'] \n";
     echo "\n";
     echo "********************************************************************\n";
     exit(1);
