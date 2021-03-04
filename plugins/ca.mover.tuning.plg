@@ -13,7 +13,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
-###2021.01.08
+###2021.03.03
 - Added shareCachePool check in age_mover to set to "cache" when entry is missing in the share config file.
      
 ###2021.01.08
