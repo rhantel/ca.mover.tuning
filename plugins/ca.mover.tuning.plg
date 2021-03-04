@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.01.08">
-<!ENTITY md5       "f4726b32ba1ad646c9e9ec2517a79095">
+<!ENTITY version   "2021.03.03">
+<!ENTITY md5       "704a6815ca136b058156cd61b8df9866">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.01.08
+- Added shareCachePool check in age_mover to set to "cache" when entry is missing in the share config file.
+     
 ###2021.01.08
 - Added version check to Install script.
 - Removed threshold percent check in mover perl script.
