@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.03.03">
-<!ENTITY md5       "704a6815ca136b058156cd61b8df9866">
+<!ENTITY version   "2021.03.07">
+<!ENTITY md5       "8a4d39f80d9ae42aaf9e3626f7a62284">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.03.07
+- Fix for shares with space in their names.
+- Left several echo statemens in age_mover to help with bug fixes.  Will remove in the near future.
+     
 ###2021.03.03
 - Added shareCachePool check in age_mover to set to "cache" when entry is missing in the share config file.
      
