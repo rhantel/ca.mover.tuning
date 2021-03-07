@@ -3,7 +3,7 @@
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
 <!ENTITY version   "2021.03.07">
-<!ENTITY md5       "8a4d39f80d9ae42aaf9e3626f7a62284">
+<!ENTITY md5       "179082975cb91ff2df8ab77f3222552d">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
