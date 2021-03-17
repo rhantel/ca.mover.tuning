@@ -13,7 +13,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
-###2021.03.10
+###2021.03.17
 - Removed Echo statements
 - Added "Original Move Now" button.
      
