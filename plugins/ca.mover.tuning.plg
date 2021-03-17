@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.03.10">
-<!ENTITY md5       "d4bcbe8724c70a21d1651f7b01581193">
+<!ENTITY version   "2021.03.17">
+<!ENTITY md5       "4b83f4365cd763d3d20fc217e7d8255c">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.03.10
+- Removed Echo statements
+- Added "Original Move Now" button.
+     
 ###2021.03.10
 - Fixed bug where custom mover not being invoked based on percentage of cache used as the only item in the config.
      
