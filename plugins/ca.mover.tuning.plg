@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.04.14">
-<!ENTITY md5       "2d3f312cebfc402b7ca4827ebcce2b64">
+<!ENTITY version   "2021.04.15">
+<!ENTITY md5       "e804ed8c3aa45a739afe2817e24b485d">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.04.15
+- Changed text for field description of "Force move of files on a schedule:" to "Force move of all files on a schedule:"
+- No log entry for this, only an email with the output will be sent, like most cron jobs.
+     
 ###2021.04.14
 - Logs now based off of standard "Mover Settings" for "Mover Logging:" of enabled or disabled.  (Very detailed logs)
 - Changed text for field description of "Force move of All files on a schedule:" to "Force move of files on a schedule:"
