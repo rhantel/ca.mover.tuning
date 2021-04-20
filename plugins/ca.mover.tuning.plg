@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.04.16">
-<!ENTITY md5       "872704270bd0670a0ae4801ee51409f3">
+<!ENTITY version   "2021.04.20">
+<!ENTITY md5       "c29a6b9d26505777864ff7206d07384b">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.04.20
+- Added "CTIME" option under Age.  This allows the "find" command to use ctime instead of mtime.
+
 ###2021.04.16
 - Added "Script to run before mover" text field.  Enter the path to a custom script to run before mover starts.
 - Added "Script to run after mover" text field.  Enter the path to a custom script to run after mover finishes.
