@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.04.20">
-<!ENTITY md5       "c29a6b9d26505777864ff7206d07384b">
+<!ENTITY version   "2021.05.06">
+<!ENTITY md5       "ee0c0b2d2a6170174f59042ce419f55d">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,15 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2020.05.06
+- Added 0 to options of days old. (Will move anything greater than 24 hours old)
+- Added 6,7,8,9 to options of days old.
+- Increased days old limit to 765
+- Removed "Original Mover" button after paypal donation link.
+- Added "Move Now button follows plug-in filters:" to make "Move Now" button run based off of plug-in settings (Yes), or run original mover (No).
+- Moved some code around in mover.php so ionice would be inititated.
+- Updated mover code for moving from array to cache (generally cache-prefer) to follow Squid's update on 4/11/2021. (Fix for shares with space in their name)
+     
 ###2021.04.20
 - Added "CTIME" option under Age.  This allows the "find" command to use ctime instead of mtime.
 
