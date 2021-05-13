@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.05.06">
-<!ENTITY md5       "ee0c0b2d2a6170174f59042ce419f55d">
+<!ENTITY version   "2021.05.13">
+<!ENTITY md5       "c37c5d21a38db8cd127434c0505068e8">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,13 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2020.05.13     
+- Fixed issue during a mover stop command, where it wasn't exiting correctly.
+- Added Test mode.  - Will run the find command outputting all the files that would have been sent to mover to the syslog if logging enabled. (Lets you see if your filter choices are correct.)
+- Add "Move All" files in a share of cache-yes to the array if cache pool is above a certain % (Must be greather than "Only move at this threshold of used cache space:"
+	- Plug-in code will still run through each share after this function.  However, it shouldn't move anything if a share path on cache is empty.
+     
+     
 ###2020.05.06
 - Added 0 to options of days old. (Will move anything greater than 24 hours old)
 - Added 6,7,8,9 to options of days old.
