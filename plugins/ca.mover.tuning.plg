@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.06.03">
-<!ENTITY md5       "df419c57c3e18d0d6a353d531c1e42db">
+<!ENTITY version   "2021.10.11">
+<!ENTITY md5       "a149f65881cbbbb8fefb3887213845d8">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2020.10.11
+- Changed echo statement to mvlogger when Mover not needed.
+	
 ###2020.06.03
 - Added size of all files from find string per share to test mode output.
 - Added "Ignore Hidden Files" option.  This adds  -not -path '/.' to the end of the find command.  Requested by slimjim181 to help with video editing folders.
