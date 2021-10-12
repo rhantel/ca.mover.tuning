@@ -13,20 +13,20 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
-###2020.10.11
+###2021.10.11
 - Changed echo statement to mvlogger when Mover not needed.
 	
-###2020.06.03
+###2021.06.03
 - Added size of all files from find string per share to test mode output.
 - Added "Ignore Hidden Files" option.  This adds  -not -path '/.' to the end of the find command.  Requested by slimjim181 to help with video editing folders.
 	
-###2020.05.13     
+###2021.05.13     
 - Fixed issue during a mover stop command, where it wasn't exiting correctly.
 - Added Test mode.  - Will run the find command outputting all the files that would have been sent to mover to the syslog if logging enabled. (Lets you see if your filter choices are correct.)
 - Add "Move All" files in a share of cache-yes to the array if cache pool is above a certain % (Must be greather than "Only move at this threshold of used cache space:"
 	- Plug-in code will still run through each share after this function.  However, it shouldn't move anything if a share path on cache is empty.
      
-###2020.05.06
+###2021.05.06
 - Added 0 to options of days old. (Will move anything greater than 24 hours old)
 - Added 6,7,8,9 to options of days old.
 - Increased days old limit to 765
