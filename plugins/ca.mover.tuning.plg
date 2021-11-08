@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.11.07">
-<!ENTITY md5       "825af0103fd617eba5704025ec51ded7">
+<!ENTITY version   "2021.11.08">
+<!ENTITY md5       "cd24a66676031a9cee7f038c77b399c2">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.11.08
+- Actually subtract 1 from the age of files for 3rd item in 11-07 release.
+- uncomment commented out eval string for mover. (To actually move files.)
+
 ###2021.11.07
 - Updated "move all" code to fix wrong variable and script error.
 - Removed 0 from days old drop down
