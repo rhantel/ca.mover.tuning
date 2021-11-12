@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.11.08c">
-<!ENTITY md5       "e50679f75af4af13b12b15c8a84490f1">
+<!ENTITY version   "2021.11.12">
+<!ENTITY md5       "2a87e0d84e19a0e3ed8b68991caac73d">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.11.12
+- Remove sizing from test mode, as it breaks when using exclude grep.
+- Test ignore file list.
+	
 ###2021.11.08
 - Actually subtract 1 from the age of files for 3rd item in 11-07 release.
 - uncomment commented out eval string for mover. (To actually move files.)
