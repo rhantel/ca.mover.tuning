@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.11.12">
-<!ENTITY md5       "2a87e0d84e19a0e3ed8b68991caac73d">
+<!ENTITY version   "2021.11.23">
+<!ENTITY md5       "cd7161c91ac925b5a98fabee7ac57d42">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.11.23
+- Add GUI button in individual shares to move just that shares files from the cache. Must be cache yes
+- Fixed bug where original mover would overwrite syslog instead of append.
+	
 ###2021.11.12
 - Remove sizing from test mode, as it breaks when using exclude grep.
 - Test ignore file list.
