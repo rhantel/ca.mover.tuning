@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.11.23">
-<!ENTITY md5       "cd7161c91ac925b5a98fabee7ac57d42">
+<!ENTITY version   "2021.11.28">
+<!ENTITY md5       "5c263d0487397cb055916f025470eef3">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2021.11.28
+- Fixed Share Mover GUI error when creating new share.
+	
 ###2021.11.23
 - Add GUI button in individual shares to move just that shares files from the cache. Must be cache yes
 - Fixed bug where original mover would overwrite syslog instead of append.
@@ -30,56 +33,7 @@
 - Removed 0 from days old drop down
 - Updated age_mover to day - 1 to be able to move files 24 hours old instead of 48. (See post from captaincu on 11/3/2021)
 	
-###2021.10.11
-- Changed echo statement to mvlogger when Mover not needed.
-	
-###2021.06.03
-- Added size of all files from find string per share to test mode output.
-- Added "Ignore Hidden Files" option.  This adds  -not -path '/.' to the end of the find command.  Requested by slimjim181 to help with video editing folders.
-	
-###2021.05.13     
-- Fixed issue during a mover stop command, where it wasn't exiting correctly.
-- Added Test mode.  - Will run the find command outputting all the files that would have been sent to mover to the syslog if logging enabled. (Lets you see if your filter choices are correct.)
-- Add "Move All" files in a share of cache-yes to the array if cache pool is above a certain % (Must be greather than "Only move at this threshold of used cache space:"
-	- Plug-in code will still run through each share after this function.  However, it shouldn't move anything if a share path on cache is empty.
-     
-###2021.05.06
-- Added 0 to options of days old. (Will move anything greater than 24 hours old)
-- Added 6,7,8,9 to options of days old.
-- Increased days old limit to 765
-- Removed "Original Mover" button after paypal donation link.
-- Added "Move Now button follows plug-in filters:" to make "Move Now" button run based off of plug-in settings (Yes), or run original mover (No).
-- Moved some code around in mover.php so ionice would be inititated.
-- Updated mover code for moving from array to cache (generally cache-prefer) to follow Squid's update on 4/11/2021. (Fix for shares with space in their name)
-     
-###2021.04.20
-- Added "CTIME" option under Age.  This allows the "find" command to use ctime instead of mtime.
-
-###2021.04.16
-- Added "Script to run before mover" text field.  Enter the path to a custom script to run before mover starts.
-- Added "Script to run after mover" text field.  Enter the path to a custom script to run after mover finishes.
-     
-###2021.04.15
-- Changed text for field description of "Force move of files on a schedule:" to "Force move of all files on a schedule:"
-- No log entry for this, only an email with the output will be sent, like most cron jobs.
-     
-###2021.04.14
-- Logs now based off of standard "Mover Settings" for "Mover Logging:" of enabled or disabled.  (Very detailed logs)
-- Changed text for field description of "Force move of All files on a schedule:" to "Force move of files on a schedule:"
-     
-###2021.03.17
-- Removed Echo statements
-- Added "Original Move Now" button.
-     
-###2021.03.10
-- Fixed bug where custom mover not being invoked based on percentage of cache used as the only item in the config.
-     
-###2021.03.07
-- Fix for shares with space in their names.
-- Left several echo statemens in age_mover to help with bug fixes.  Will remove in the near future.
-     
-###2021.03.03
-- Added shareCachePool check in age_mover to set to "cache" when entry is missing in the share config file.
+### See previous releases for earlier notes...	
      
 ###2021.01.08
 - Added version check to Install script.
