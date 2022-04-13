@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2021.11.28">
-<!ENTITY md5       "5c263d0487397cb055916f025470eef3">
+<!ENTITY version   "2022.04.13">
+<!ENTITY md5       "b188a114d0928f7290f2e3e74fa3425f">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2022.04.13
+- Fixed move all when failed with space in share name.
+	
 ###2021.11.28
 - Fixed Share Mover GUI error when creating new share.
 	
