@@ -1,9 +1,9 @@
 <?xml version='1.0' standalone='yes'?>
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
-<!ENTITY author    "Andrew Zawadzki Modified by hugenbdd">
-<!ENTITY version   "2022.04.13">
-<!ENTITY md5       "b188a114d0928f7290f2e3e74fa3425f">
+<!ENTITY author    "hugenbdd">
+<!ENTITY version   "2023.05.16">
+<!ENTITY md5       "7e670ec9730629e53b2c1b56c4cef1f1">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,31 +13,15 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2023.05.16
+- Changed to a file list instead of piping the output from the find command to the binary mover. (excludes share mover button)
+- Moved logs to /tmp/Mover/
+- Supports GUI update to allow percent complete, and number of files complete. (customized files needed for this can be found in my github)
+     - ArrayOperation.page, nchan/parity_list
+
 ###2022.04.13
 - Fixed move all when failed with space in share name.
-	
-###2021.11.28
-- Fixed Share Mover GUI error when creating new share.
-	
-###2021.11.23
-- Add GUI button in individual shares to move just that shares files from the cache. Must be cache yes
-- Fixed bug where original mover would overwrite syslog instead of append.
-	
-###2021.11.12
-- Remove sizing from test mode, as it breaks when using exclude grep.
-- Test ignore file list.
-	
-###2021.11.08
-- Actually subtract 1 from the age of files for 3rd item in 11-07 release.
-- uncomment commented out eval string for mover. (To actually move files.)
-
-###2021.11.07
-- Updated "move all" code to fix wrong variable and script error.
-- Removed 0 from days old drop down
-- Updated age_mover to day - 1 to be able to move files 24 hours old instead of 48. (See post from captaincu on 11/3/2021)
-	
-### See previous releases for earlier notes...	
-     
+    
 ###2021.01.08
 - Added version check to Install script.
 - Removed threshold percent check in mover perl script.
