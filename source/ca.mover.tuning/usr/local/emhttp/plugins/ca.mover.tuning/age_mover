@@ -33,6 +33,7 @@
 # operation continues on to the next file.
 
 PIDFILE="/var/run/mover.pid"
+SOFTSTOPFILE="/var/run/moversoft.stop"
 CFGFILE="/boot/config/share.cfg"
 LOGLEVEL=0
 AGE=0
@@ -109,6 +110,14 @@ loopcustomFilelist () {
 
         ##Start looping
         while read CUSTOMFILE; do
+                ##Code for softstop here
+                if [ -e $SOFTSTOPFILE ]; then
+                        echo "Soft Stop requested"
+                        mvlogger "Soft Stopping requested"
+                        break
+                fi
+
+
                 #Pull out File Position Number
                 CUSTOMFILEPOSITION=$(echo "$CUSTOMFILE" | sed -n 's/\([^;]*\).*/\1/p')
 
@@ -139,9 +148,7 @@ loopcustomFilelist () {
 
 			echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
 		fi
-				
-		
-
+	
                 #Reduce Remaining Cache Size
                 ((REMAININGCACHESIZE-=$CUSTOMFILESIZE))
 
@@ -157,6 +164,13 @@ loopArrayFilelist () {
 
         ##Start looping
         while read CUSTOMFILE; do
+		#Check to see if there is a soft stop requested.
+                if [ -e $SOFTSTOPFILE ]; then
+                        echo "Soft Stop requested"
+                        mvlogger "Soft Stopping requested"
+                        break
+		fi
+
                 #Pull out File Position Number
                 CUSTOMFILEPOSITION=$(echo "$CUSTOMFILE" | sed -n 's/\([^;]*\).*/\1/p')
 
@@ -424,6 +438,11 @@ start() {
     exit 3
   fi
 
+  #Remove any old /var/run/moversoft.stop files
+  if [ -e $SOFTSTOPFILE  ]; then
+    rm $SOFTSTOPFILE
+    echo "Mover soft stop file removed."
+  fi
 
   echo $$ >/var/run/mover.pid
   [[ $LOGLEVEL -gt 0 ]] && echo "mover: started"
@@ -656,6 +675,8 @@ mvlogger "write first status file after to array"
   loopArrayFilelist
 
   rm -f $PIDFILE
+  rm -f $SOFTSTOPFILE
+
   [[ $LOGLEVEL -gt 0 ]] && echo "mover: finished"
 
   #Run mover after script if specified.
@@ -692,6 +713,11 @@ stop() {
   echo "mover: stopped"
 }
 
+softstop() {
+ echo "Soft Start Requested"
+ touch $SOFTSTOPFILE
+}
+
 case $1 in
 start)
   start
@@ -699,12 +725,15 @@ start)
 stop)
   stop
   ;;
+softstop)
+ softstop
+ ;;
 status)
   [ -f $PIDFILE ]
   ;;
 *)
   # Default is "start"
-  # echo "Usage: $0 (start|stop|status)"
+  # echo "Usage: $0 (start|stop|softstop|status)"
   start
   ;;
 esac
