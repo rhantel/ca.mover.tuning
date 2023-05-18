@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "hugenbdd">
-<!ENTITY version   "2023.05.16">
-<!ENTITY md5       "7e670ec9730629e53b2c1b56c4cef1f1">
+<!ENTITY version   "2023.05.18">
+<!ENTITY md5       "1b729736f818612f9cd8a317c6711d9f">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,12 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2023.05.18
+- Fixed a issue where SED was seeing [] and {} inside of the filepath string, by double quoting the echo'd variable.
+- Added softstop as a command to gracefully exit the mover from the command line.  Checks for a file under /var/run/moversoft.stop.  
+   before sending each file to the binary mover.  Will exit the loop if the file exists and mover will stop once the current file is 
+   done moving.
+     Example: /usr/local/emhttp/plugins/ca.mover.tuning/age_mover softstop
 ###2023.05.16
 - Changed to a file list instead of piping the output from the find command to the binary mover. (excludes share mover button)
 - Moved logs to /tmp/Mover/
