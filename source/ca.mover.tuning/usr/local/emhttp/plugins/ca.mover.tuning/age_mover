@@ -57,6 +57,7 @@ MOVER_FILELIST="/tmp/Mover/Mover_Tuning_$NOW.list"
 CACHE_FILELIST="/tmp/Mover/Cache_Tuning_$NOW.list"
 CUSTOM_MOVER_FILELIST="/tmp/Mover/Custom_Mover_Tuning_$NOW.list"
 CUSTOM_CACHE_FILELIST="/tmp/Mover/Custom_Cache_Tuning_$NOW.list"
+HARD_MOVER_FILELIST="/tmp/Mover/Hard_Mover_Tuning_$NOW.list"
 MOVER_STATUS="/usr/local/emhttp/state/mover.ini"
 MOVER_LOG="/tmp/Mover/Mover_Tuning_$NOW.log"
 GUI_CURRENT_FILE=""
@@ -108,55 +109,120 @@ customFilelist () {
 loopcustomFilelist () {
         #Reach through the CUSTOM MOVER FILELIST and send the filepath to the mover binary
 
-        ##Start looping
-        while read CUSTOMFILE; do
-                ##Code for softstop here
-                if [ -e $SOFTSTOPFILE ]; then
-                        echo "Soft Stop requested"
-                        mvlogger "Soft Stopping requested"
-                        break
-                fi
+	#Set Has Hard Links = False as we have to test for this use case.
+	HASHARDLINK=false
 
+	#Loop through the filelist and check to see if there are any hardlinks
+	while read HARDFILE; do
 
-                #Pull out File Position Number
-                CUSTOMFILEPOSITION=$(echo "$CUSTOMFILE" | sed -n 's/\([^;]*\).*/\1/p')
 
                 #Pull out FilePath
-                CUSTOMFILEPATH=$(echo "$CUSTOMFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
+                HARDFILEPATH=$(echo "$HARDFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
 
-                #Pull out File Size
-                CUSTOMFILESIZE=$(echo "$CUSTOMFILE" | sed -n 's/.*;\(.*\)/\1/p')
+		#Remove leading and trailing quotes
+		HARDFILEPATH=$(echo "$HARDFILEPATH" | sed 's/.\(.*\)./\1/')
+		echo "Hard File Path: $HARDFILEPATH"
 
-                ##echo "Position: $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
-		mvlogger "Position:  $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
-	
-		#Set mover.ini variables
-		GUI_CURRENT_FILE=$CUSTOMFILEPATH
-		GUI_SIZE_LEFT=$(echo $REMAININGCACHESIZE | numfmt --to iec --format "%8.2f") 
-		GUI_ACTION="Moving $CUSTOMFILEPOSITION of $NUM_FILES_TO_ARRAY to Array.      $GUI_SIZE_LEFT remaining."
+		#Test for hardlinks of the file
+		LINK_COUNT=$(stat -c "%h" "$HARDFILEPATH")
+		echo "LINK Count: $LINK_COUNT"
 
-		moverStatusWrite
-
-                #Send File to Mover Binary
-		if [ "$TESTMODE" = "yes" ] ; then
-			mvlogger "Running in Test Mode: $CUSTOMFILEPATH"
-			sleep 0.5
-		else
-		#	mvlogger "Not in Test mode"
-			#Remove front and back quote marks.
-                        CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/')
-
-			echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+		if [ "$LINK_COUNT" -gt 1 ]; then
+			mvlogger "File $HARDFILEPATH has $LINK_COUNT hard links."
+			echo "File $HARDFILEPATH has $LINK_COUNT hard links."
+			
+			HASHARDLINK=true
 		fi
+
+
+	done <$CUSTOM_MOVER_FILELIST
+
+	echo "Hard Link Status: $HASHARDLINK"
+
+
+	#Determine if we can loop through each file or if we have to send the whole filelist to mover binary.
+	if [ "$HASHARDLINK" = true ]; then
+		mvlogger "File List contains hardlinks, sending all of the filelist to mover binary"
+
+		 #Loop through the filelist and create a new "HARDLinks custom mover file"
+                 while read HARD_LINK_FILELIST; do
+                 	#Pull out FilePath only.
+                 	HARD_PATH=$(echo "$HARD_LINK_FILELIST" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
+
+			#Remove leading and training quotes.
+			HARD_PATH=$(echo "$HARD_PATH" | sed 's/.\(.*\)./\1/')
+                        echo "$HARD_PATH">>$HARD_MOVER_FILELIST
+
+                        mvlogger "Adding $HARD_PATH to $HARD_MOVER_FILELIST"
+
+
+                 done <$CUSTOM_MOVER_FILELIST
+
+		
+		#Send Files to Binary mover
+		if [ "TESTMODE" = "yes" ] ; then
+			mvlogger "Running in Test Mode: HARDLINKS"
+		else
+			#Send the hard links filelist into mover.
+			mvlogger "Sending $HARD_MOVER_FILELIST to binary mover"
+			cat "$HARD_MOVER_FILELIST" | /usr/local/sbin/move -d $LOGLEVEL 
+
+		fi
+			
+
+	else
+	#File List contains no hardlinks.  loop through each file.
+
+
+        	while read CUSTOMFILE; do
+                	##Code for softstop here
+                	if [ -e $SOFTSTOPFILE ]; then
+                	        echo "Soft Stop requested"
+                	        mvlogger "Soft Stopping requested"
+                	        break
+                	fi
+
+
+                	#Pull out File Position Number
+                	CUSTOMFILEPOSITION=$(echo "$CUSTOMFILE" | sed -n 's/\([^;]*\).*/\1/p')
+
+                	#Pull out FilePath
+                	CUSTOMFILEPATH=$(echo "$CUSTOMFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
+
+                	#Pull out File Size
+                	CUSTOMFILESIZE=$(echo "$CUSTOMFILE" | sed -n 's/.*;\(.*\)/\1/p')
+
+                	##echo "Position: $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
+			mvlogger "Position:  $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
 	
-                #Reduce Remaining Cache Size
-                ((REMAININGCACHESIZE-=$CUSTOMFILESIZE))
+			#Set mover.ini variables
+			GUI_CURRENT_FILE=$CUSTOMFILEPATH
+			GUI_SIZE_LEFT=$(echo $REMAININGCACHESIZE | numfmt --to iec --format "%8.2f") 
+			GUI_ACTION="Moving $CUSTOMFILEPOSITION of $NUM_FILES_TO_ARRAY to Array.      $GUI_SIZE_LEFT remaining."
 
-                #Write Status
-                moverStatusWrite
+			moverStatusWrite
+
+                	#Send File to Mover Binary
+			if [ "$TESTMODE" = "yes" ] ; then
+				mvlogger "Running in Test Mode: $CUSTOMFILEPATH"
+				sleep 0.5
+			else
+			#	mvlogger "Not in Test mode"
+				#Remove front and back quote marks.
+                        	CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/')
+
+				echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+			fi
+	
+                	#Reduce Remaining Cache Size
+                	((REMAININGCACHESIZE-=$CUSTOMFILESIZE))
+
+                	#Write Status
+                	moverStatusWrite
 
 
-        done <$CUSTOM_MOVER_FILELIST
+        	done <$CUSTOM_MOVER_FILELIST
+	fi
 }
 
 loopArrayFilelist () {
