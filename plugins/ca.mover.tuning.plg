@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "hugenbdd">
-<!ENTITY version   "2023.06.15">
-<!ENTITY md5       "55e236c51d70cbc71d2bed2115d57892">
+<!ENTITY version   "2023.06.16">
+<!ENTITY md5       "75da5a4520d277a27574a59bb0a4824e">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,10 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2023.06.16
+- Fix no empty directories file
+- Fix missing echo statement on hardlinks area. (Foux 6-16-2023)
+
 ###2023.06.15
 - Delete empty directories
 - Add Softlink for binary mover file change if on 6.12 RC8 in install script. (CS01-HS Found 6/13)
