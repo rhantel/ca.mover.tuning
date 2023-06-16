@@ -41,16 +41,6 @@
 - Supports GUI update to allow percent complete, and number of files complete. (customized files needed for this can be found in my github)
      - ArrayOperation.page, nchan/parity_list
     
-###2021.01.08
-- Added version check to Install script.
-- Removed threshold percent check in mover perl script.
-- Added threshold percent check to age_mover bash script.
-- age_mover bash script now check for global threshold percent or the a manual entry in the ca.mover.tuning.cfg file. (example: /boot/config/plugins/ca.mover.tuning   cachetv="65")  
-     - "cachetv" being the name of the pool.
-     - if using single digits leading zero required. (i.e. cachetv="01" for 1 percent)
-- Removed cache disk check in perl script to remove warning on scheduler page.
-- Several hard coded echo statements to help in trouble shooting/debug.  These will be removed later but may cause an email to be generated and sent to you.
-
 ### See previous releases for earlier notes...
 
 </CHANGES>
