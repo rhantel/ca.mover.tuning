@@ -32,12 +32,13 @@ function getShareSettings($shareName)
 {
     $cfg = parse_share_cfg("ca.mover.tuning", $shareName);
 
+    $delimitter = "?|+?"; #To replace spaces, chosen so it is very unlikely to be an issue
     $mover_opt_str = "override"; #Will be used for "initialise()" in age_mover to log that the settings are being changed for the share
     $ageLevel = $cfg['daysold'];
     $sizeLevel = $cfg['sizeinM'];
     $sparsnessLevel = $cfg['sparsnessv'];
-    $filelistLevel = $cfg['filelistv'];
-    $filetypesLevel = $cfg['filetypesv'];
+    $filelistLevel = str_replace(' ', $delimitter, trim($cfg['filelistv']));
+    $filetypesLevel = str_replace(' ', '', trim($cfg['filetypesv']));
     $ctime = $cfg['ctime'];
     $ihidden = $cfg['ignoreHidden'];
 
@@ -84,7 +85,8 @@ function getShareSettings($shareName)
         $mover_opt_str = "$mover_opt_str ''";
     }
 
-    $mover_opt_str = "$mover_opt_str $shareName"; #Will be used to log the name of the share with the updated settings
+    $age_mover_str = "$age_mover_str $delimitter"; 	#Add delimitter for age_mover to use
+    $mover_opt_str = "$mover_opt_str $shareName";   #Will be used to log the name of the share with the updated settings
 
 
 
