@@ -388,7 +388,6 @@ mvlogger  "*********************************MOVER START*************************
 
 #Test input variables
 # 1: start/stop/kill 2: Age of files 3: Size of files 4: Sparness amount 5: Exclude file list file path
-delimitter=$13
 if [ -z "$2" ] ; then
         mvlogger "No Age  Argument Supplied"
         AGE=0
@@ -421,13 +420,12 @@ else
 	###echo "Skipfilelist supplied"
 	###SKIPFILESLIST=chomp($5)
 	SKIPFILESLIST=$5
-	SKIPFILESLIST=str_replace($delimitter, ' ', $SKIPFILESLIST); #Replaces spaces
 	SKIPFILESLIST=`echo $SKIPFILESLIST | sed 's/ *$//g'`
 	mvlogger "SKIP FILE: $SKIPFILESLIST"
 fi
 
 if [ -z "$6" ] ; then
-        mvlogger "No Skip File Types Argument Supplied"
+        mvlogger "No Skipfiles Argument Supplied"
         SKIPFILETYPES=""
 else
         ###echo "Skipfiletypes supplied"
@@ -441,7 +439,6 @@ if [ -z "$7" ] ; then
 	BEFORESCRIPT=""
 else
 	BEFORESCRIPT=$7
-	BEFORESCRIPT=str_replace($delimitter, ' ', $BEFORESCRIPT);
 	mvlogger "BEFORESCRIPT: $BEFORESCRIPT"
 fi
 
@@ -450,7 +447,6 @@ if [ -z "$8" ] ; then
 	AFTERSCRIPT=""
 else
 	AFTERSCRIPT=$8
-	AFTERSCRIPT=str_replace($delimitter, ' ', $AFTERSCRIPT);
 	mvlogger "AFTERSCRIPT: $AFTERSCRIPT"
 fi
 
