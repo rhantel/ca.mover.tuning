@@ -32,15 +32,14 @@ function getShareSettings($shareName)
 {
     $cfg = parse_share_cfg("ca.mover.tuning", $shareName);
 
-    $delimitter = "?|+?"; #To replace spaces, chosen so it is very unlikely to be an issue
-    $mover_opt_str = "override"; #Will be used for "initialise()" in age_mover to log that the settings are being changed for the share
+    $mover_opt_str = "override"; #Place holder because $1 is not used
+    $threshold = $cfg['threshold'];
     $ageLevel = $cfg['daysold'];
     $sizeLevel = $cfg['sizeinM'];
     $sparsnessLevel = $cfg['sparsnessv'];
-    $filelistLevel = str_replace(' ', $delimitter, trim($cfg['filelistv']));
-    $filetypesLevel = str_replace(' ', '', trim($cfg['filetypesv']));
+    $filelistLevel = $cfg['filelistv'];
+    $filetypesLevel = $cfg['filetypesv'];
     $ctime = $cfg['ctime'];
-    $ihidden = $cfg['ignoreHidden'];
 
     #build age_mover command for all options.
     if ($cfg['age'] == "yes") {
@@ -59,12 +58,12 @@ function getShareSettings($shareName)
         $mover_opt_str = "$mover_opt_str 0";
     }
     if ($cfg['filelistf'] == "yes") {
-        $mover_opt_str = "$mover_opt_str $filelistLevel";
+        $mover_opt_str = "$mover_opt_str \"$filelistLevel\"";
     } else {
         $mover_opt_str = "$mover_opt_str ''";
     }
     if ($cfg['filetypesf'] == "yes") {
-        $mover_opt_str = "$mover_opt_str $filetypesLevel";
+        $mover_opt_str = "$mover_opt_str \"$filetypesLevel\"";
     } else {
         $mover_opt_str = "$mover_opt_str ''";
     }
@@ -84,17 +83,15 @@ function getShareSettings($shareName)
     } else {
         $mover_opt_str = "$mover_opt_str ''";
     }
-
-    $age_mover_str = "$age_mover_str $delimitter"; 	#Add delimitter for age_mover to use
-    $mover_opt_str = "$mover_opt_str $shareName";   #Will be used to log the name of the share with the updated settings
-
-
-
-    //exec("echo 'about to hit mover string here: $mover_opt_str' >> /var/log/syslog");
+    if (empty($threshold)) {
+        $mover_opt_str = "$mover_opt_str 0";
+    } else {
+        $mover_opt_str = "$mover_opt_str $threshold";
+    }
 
     return $mover_opt_str;
 }
 #---------------------------------------------------------------------------------------------------------------------
-getShareSettings($argv[1]);
+$mover_opt_str = getShareSettings($argv[1]);
 echo $mover_opt_str;
 ?>
