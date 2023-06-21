@@ -56,6 +56,7 @@ NOW=$(date +"%FT%H%M%S")
 MOVER_FILELIST="/tmp/Mover/Mover_Tuning_$NOW.list"
 CACHE_FILELIST="/tmp/Mover/Cache_Tuning_$NOW.list"
 CUSTOM_MOVER_FILELIST="/tmp/Mover/Custom_Mover_Tuning_$NOW.list"
+CUSTOM_MOVER_DIRECTORYLIST="/tmp/Mover/Custom_Mover_Directory_$NOW.list"
 CUSTOM_CACHE_FILELIST="/tmp/Mover/Custom_Cache_Tuning_$NOW.list"
 HARD_MOVER_FILELIST="/tmp/Mover/Hard_Mover_Tuning_$NOW.list"
 MOVER_STATUS="/usr/local/emhttp/state/mover.ini"
@@ -68,10 +69,23 @@ NUM_FILES_TO_CACHE=0
 
 mvlogger () {
 
+	if [ ! -d "/tmp/Mover" ]; then
+		echo "/tmp/Mover Directory does not exist. Creating it"
+		mkdir -p /tmp/Mover
+	fi
+
 	if [ $LOGLEVEL = 1 ] ; then
 		echo "mvlogger: $1" >> $MOVER_LOG
 	fi
 
+}
+
+function is_zfs_mountpoint_fstype()
+{
+        local result
+        result=`findmnt $1 -o fstype | tail -n 1`
+        [ "$result" = "zfs" ]
+        return
 }
 
 moverStatusWrite () {
@@ -83,6 +97,41 @@ moverStatusWrite () {
 	echo "RemainFromArray=${REMAININGARRAYSIZE}" >> $MOVER_STATUS
 	echo "File=${GUI_CURRENT_FILE}" >> $MOVER_STATUS
 	echo "Action=${GUI_ACTION}" >> $MOVER_STATUS
+}
+
+#Move each directory, starting with their subdirectories first ony if they are empty..
+loopdirectories () {
+
+	# Sort the directory list in reverse order with subdirectories first	
+	if [ -f "$CUSTOM_MOVER_DIRECTORYLIST" ]; then
+	  while read DIRECTORYFILEPATH; do
+
+		count=$(find "$DIRECTORYFILEPATH" -mindepth 1 | wc -l)
+		
+		#Test to see if the directory is empty.
+		if [ "$count" -gt 0 ]; then
+			mvlogger "Directory is not empty. Count: $count - $DIRECTORYFILEPATH"
+		else
+	
+			if [ "$TESTMODE" = "yes" ] ; then
+				###echo "TEST Mode: $TESTMODE  -  DIRECTORY: $DIRECTORYFILEPATH "
+				mvlogger "$DIRECTORYFILEPATH is empty, Count: $count - Send it to the mover"
+			else
+				mvlogger "$DIRECTORYFILEPATH is empty, Count: $count - Send it to the mover"
+				if [ -e "$DIRECTORYFILEPATH" ]; then
+					echo "$DIRECTORYFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+				else
+					mvlogger "$DIRECTORYFILEPATH does not exists, nothing to move, avoiding lstat error for mover"
+				fi
+			fi
+
+		fi
+
+	  done < <(cat $CUSTOM_MOVER_DIRECTORYLIST | sort -r -t'/' -k3,3nr -k4)
+	else	
+		mvlogger "No $CUSTOM_MOVER_DIRECTORYLIST created as no empty directories"
+	fi
+
 }
 
 
@@ -97,7 +146,8 @@ customFilelist () {
                 CACHEFILESIZE=$(stat -c%s "$CACHEFILEPATH")
 
 		if [ -d "$CACHEFILEPATH" ]; then
-			mvlogger "It's a Directory don't include: $CACHEFILEPATH"
+			mvlogger "It's a Directory send to directory list $CUSTOM_MOVER_DIRECTORYLIST"
+			echo "$CACHEFILEPATH">>$CUSTOM_MOVER_DIRECTORYLIST
 		else
 			((FILECOUNT++))
                 	echo "$FILECOUNT;\"$CACHEFILEPATH\";$CACHEFILESIZE">>$CUSTOM_MOVER_FILELIST
@@ -121,15 +171,14 @@ loopcustomFilelist () {
 
 		#Remove leading and trailing quotes
 		HARDFILEPATH=$(echo "$HARDFILEPATH" | sed 's/.\(.*\)./\1/')
-		echo "Hard File Path: $HARDFILEPATH"
+		mvlogger "Hard File Path: $HARDFILEPATH"
 
 		#Test for hardlinks of the file
 		LINK_COUNT=$(stat -c "%h" "$HARDFILEPATH")
-		echo "LINK Count: $LINK_COUNT"
+		mvlogger "LINK Count: $LINK_COUNT"
 
 		if [ "$LINK_COUNT" -gt 1 ]; then
 			mvlogger "File $HARDFILEPATH has $LINK_COUNT hard links."
-			echo "File $HARDFILEPATH has $LINK_COUNT hard links."
 			
 			HASHARDLINK=true
 		fi
@@ -137,7 +186,7 @@ loopcustomFilelist () {
 
 	done <$CUSTOM_MOVER_FILELIST
 
-	echo "Hard Link Status: $HASHARDLINK"
+	mvlogger "Hard Link Status: $HASHARDLINK"
 
 
 	#Determine if we can loop through each file or if we have to send the whole filelist to mover binary.
@@ -151,16 +200,15 @@ loopcustomFilelist () {
 
 			#Remove leading and training quotes.
 			HARD_PATH=$(echo "$HARD_PATH" | sed 's/.\(.*\)./\1/')
-                        echo "$HARD_PATH">>$HARD_MOVER_FILELIST
 
                         mvlogger "Adding $HARD_PATH to $HARD_MOVER_FILELIST"
-
+			echo "$HARD_PATH">>$HARD_MOVER_FILELIST
 
                  done <$CUSTOM_MOVER_FILELIST
 
 		
 		#Send Files to Binary mover
-		if [ "TESTMODE" = "yes" ] ; then
+		if [ "$TESTMODE" = "yes" ] ; then
 			mvlogger "Running in Test Mode: HARDLINKS"
 		else
 			#Send the hard links filelist into mover.
@@ -205,13 +253,17 @@ loopcustomFilelist () {
                 	#Send File to Mover Binary
 			if [ "$TESTMODE" = "yes" ] ; then
 				mvlogger "Running in Test Mode: $CUSTOMFILEPATH"
-				sleep 0.5
+				sleep 0.1
 			else
 			#	mvlogger "Not in Test mode"
 				#Remove front and back quote marks.
                         	CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/')
-
-				echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+				
+				if [ -e "$CUSTOMFILEPATH" ]; then
+					echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+				else
+					mvlogger "$CUSTOMFILEPATH does not exists, skipping to avoid lstat error"
+				fi
 			fi
 	
                 	#Reduce Remaining Cache Size
@@ -264,9 +316,12 @@ loopArrayFilelist () {
 
 			#Remove front and back quote marks.
 			CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/') 	
-			#mvlogger "Custom File Remove Quote: $CUSTOMFILEPATH"
-			#echo "loop array filelist: $CUSTOMFILEPATH"
-			echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+
+			if [ -e "$CUSTOMFILEPATH" ]; then
+				echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+			else
+				mvlogger "$CUSTOMFILEPATH does not exists, not moving to avoid lstat error."
+			fi
                 fi
 
                 #Reduce Remaining Cache Size
@@ -338,13 +393,18 @@ totalsizeArraylist () {
 
 
 mvallfrompool() {
-	mvlogger "Checking to see if we should all files from share."
+	mvlogger "Checking to see if we should move all files from share."
 	mvlogger "Move All Cache Threshold: $CACHETHRESH"
 
 	for POOL in /boot/config/pools/*.cfg ; do
 		# Check to see if each pool is over the move all cache-yes shares files to array
 		POOLPATH=/mnt/$(basename "$POOL" .cfg)
-		POOLPCTUSEDA=`df --output=pcent $POOLPATH | tail -n 1 | tr -d '%'`
+		if is_zfs_mountpoint_fstype "$POOLPATH" ; then
+			mvlogger "The fstype of $POOLPATH is zfs."
+			POOLPCTUSEDA=`zpool get -o value capacity $(basename "$POOL" .cfg) | tail -n 1 | tr -d '%'`
+		else
+			POOLPCTUSEDA=`df --output=pcent $POOLPATH | tail -n 1 | tr -d '%'`
+		fi
 		mvlogger "$POOLPATH PCT USED: $POOLPCTUSEDA"
 
 		if [ $POOLPCTUSEDA -gt $CACHETHRESH ] ; then
@@ -384,10 +444,14 @@ if [ -f $CFGFILE ]; then
 	fi
 fi
 
+##Add /tmp/Mover directory creation command here.
+
+
 mvlogger  "*********************************MOVER START*******************************"
 
 #Test input variables
 # 1: start/stop/kill 2: Age of files 3: Size of files 4: Sparness amount 5: Exclude file list file path
+
 if [ -z "$2" ] ; then
         mvlogger "No Age  Argument Supplied"
         AGE=0
@@ -514,7 +578,7 @@ start() {
   [[ $LOGLEVEL -gt 0 ]] && echo "mover: started"
 
   #Make /tmp/Mover directory silently.
-  mkdir -p /tmp/Mover
+  ###mkdir -p /tmp/Mover
 
   #Delete helper files over 5 days old.
   find /tmp/Mover/* -daystart -mtime +5 -name '*.list' -delete
@@ -526,12 +590,14 @@ start() {
   shopt -s nullglob
 
     #Run mover before script if specified.
-    if [ -z $BEFORESCRIPT ] ; then
+    if [ -z "$BEFORESCRIPT" ] ; then
 	mvlogger "No Script to Run."
     else
-    	if [ -f $BEFORESCRIPT ] ; then
+    	if [ -f "$BEFORESCRIPT" ] && [ -x "$BEFORESCRIPT" ] ; then
 		mvlogger "Before script will be executed: $BEFORESCRIPT"
-		eval "$BEFORESCRIPT"
+		eval \"$BEFORESCRIPT\"
+	else
+		mvlogger "Before script file does not exist or is not executable.  Skipping."
 	fi
     fi
 
@@ -577,7 +643,12 @@ start() {
 
 
 		#Find the current percent of used size of pool.
-		POOLPCTUSED=`df --output=pcent /mnt/$CACHEPOOLNAME | tail -n 1 | tr -d '%'`
+		if is_zfs_mountpoint_fstype "/mnt/$CACHEPOOLNAME" ; then
+			mvlogger "$CACHEPOOLNAME is zfs."
+			POOLPCTUSED=`zpool get -o value capacity $CACHEPOOLNAME | tail -n 1 | tr -d '%'`
+		else
+			POOLPCTUSED=`df --output=pcent /mnt/$CACHEPOOLNAME | tail -n 1 | tr -d '%'`
+		fi
 		mvlogger "Pool Pct Used: $POOLPCTUSED %"
 
 		#Determine which percent limit we are going to use, in case ca.mover.tuning.cfg does not have a cachepool percent limit entry.
@@ -737,6 +808,9 @@ mvlogger "write first status file after to array"
   #Loop Through Cache to array Mover fiels
   loopcustomFilelist
 
+  #move the empty directories
+  loopdirectories
+
   #loop through each file in the list of array files.
   loopArrayFilelist
 
@@ -746,12 +820,14 @@ mvlogger "write first status file after to array"
   [[ $LOGLEVEL -gt 0 ]] && echo "mover: finished"
 
   #Run mover after script if specified.
-  if [ -z $AFTERSCRIPT ] ; then
+  if [ -z "$AFTERSCRIPT" ] ; then
 	mvlogger "No After Script to Run."
   else
-	if [ -f $AFTERSCRIPT ] ; then
+	if [ -f "$AFTERSCRIPT" ] && [ -x "$AFTERSCRIPT" ] ; then
 		mvlogger "After script will be executed: $AFTERSCRIPT"
-      		eval "$AFTERSCRIPT"
+      		eval \"$AFTERSCRIPT\"
+	else
+		mvlogger "After script file does not exist or is not executable. Skipping."
 	fi
   fi
 
@@ -803,4 +879,5 @@ status)
   start
   ;;
 esac
+
 
