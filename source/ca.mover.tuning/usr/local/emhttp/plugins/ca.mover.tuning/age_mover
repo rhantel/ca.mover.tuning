@@ -115,8 +115,11 @@ loopdirectories() {
                     mvlogger "$DIRECTORYFILEPATH is empty, Count: $count - Send it to the mover"
                 else
                     mvlogger "$DIRECTORYFILEPATH is empty, Count: $count - Send it to the mover"
-                    ###echo "NOT TEST MODE: Send to mover $DIRECTORYFILEPATH"
+				if [ -e "$DIRECTORYFILEPATH" ]; then
                     echo "$DIRECTORYFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+				else
+					mvlogger "$DIRECTORYFILEPATH does not exists, nothing to move, avoiding lstat error for mover"
+				fi
                 fi
 
             fi
@@ -191,7 +194,7 @@ loopcustomFilelist() {
             HARD_PATH=$(echo "$HARD_PATH" | sed 's/.\(.*\)./\1/')
 
             mvlogger "Adding $HARD_PATH to $HARD_MOVER_FILELIST"
-            echo "$HARD_PATH">>$HARD_MOVER_FILELIST
+            echo "$HARD_PATH" >>$HARD_MOVER_FILELIST
         done <$CUSTOM_MOVER_FILELIST
 
         #Send Files to Binary mover
@@ -243,7 +246,11 @@ loopcustomFilelist() {
                 #Remove front and back quote marks.
                 CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/')
 
+				if [ -e "$CUSTOMFILEPATH" ]; then
                 echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+				else
+					mvlogger "$CUSTOMFILEPATH does not exists, skipping to avoid lstat error"
+				fi
             fi
 
             #Reduce Remaining Cache Size
@@ -295,9 +302,12 @@ loopArrayFilelist() {
 
             #Remove front and back quote marks.
             CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/')
-            #mvlogger "Custom File Remove Quote: $CUSTOMFILEPATH"
-            #echo "loop array filelist: $CUSTOMFILEPATH"
+
+			if [ -e "$CUSTOMFILEPATH" ]; then
             echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+			else
+				mvlogger "$CUSTOMFILEPATH does not exists, not moving to avoid lstat error."
+			fi
         fi
 
         #Reduce Remaining Cache Size
@@ -531,9 +541,8 @@ setMoverSettings() {
         mvlogger "Threshold Percent: $THRESHOLD"
     fi
 }
-aa=$1 bb=$2 cc=$3 dd=$4 ee=$5 ff=$6 gg=$7 hh=$8 ii=$9 jj=${10} kk=${11} ll=${12} mm=${13}       #Didn't want to reuse age, size, etc
-setMoverSettings "$aa" "$bb" "$cc" "$dd" "$ee" "$ff" "$gg" "$hh" "$ii" "$jj" "$kk" "$ll" "$mm"  #Set values on first run
-
+aa=$1 bb=$2 cc=$3 dd=$4 ee=$5 ff=$6 gg=$7 hh=$8 ii=$9 jj=${10} kk=${11} ll=${12} mm=${13}      #Didn't want to reuse age, size, etc
+setMoverSettings "$aa" "$bb" "$cc" "$dd" "$ee" "$ff" "$gg" "$hh" "$ii" "$jj" "$kk" "$ll" "$mm" #Set values on first run
 
 start() {
     if [ -f $PIDFILE ]; then
