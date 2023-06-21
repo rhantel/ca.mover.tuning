@@ -191,7 +191,7 @@ loopcustomFilelist() {
             HARD_PATH=$(echo "$HARD_PATH" | sed 's/.\(.*\)./\1/')
 
             mvlogger "Adding $HARD_PATH to $HARD_MOVER_FILELIST"
-
+            echo "$HARD_PATH">>$HARD_MOVER_FILELIST
         done <$CUSTOM_MOVER_FILELIST
 
         #Send Files to Binary mover
