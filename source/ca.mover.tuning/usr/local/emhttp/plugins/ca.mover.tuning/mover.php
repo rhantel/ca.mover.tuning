@@ -56,7 +56,7 @@ function startMover($options = "")
 
         if ($cfg['threshold'] >= 0 or $cfg['age'] == "yes" or $cfg['sizef'] == "yes" or $cfg['sparsnessf'] == "yes" or $cfg['filelistf'] == "yes" or $cfg['filetypesf'] == "yes" or $beforescript != '' or $afterscript != '' or $cfg['testmode'] == "yes") {
 
-            $age_mover_str = "/usr/local/emhttp/plugins/ca.mover.tuning/age_mover start";
+			$age_mover_str = "/usr/local/emhttp/plugins/ca.mover.tuning/age_mover start";
             $niceLevel = $cfg['moverNice'] ?: "0";
             $ioLevel = $cfg['moverIO'] ?: "-c 2 -n 0";
             $threshold = $cfg['threshold'];
