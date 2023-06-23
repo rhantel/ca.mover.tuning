@@ -87,13 +87,13 @@ function startMover($options="") {
 				$age_mover_str = "$age_mover_str 0";
 			}
 			if ($cfg['filelistf'] == "yes") {
-				$age_mover_str = "$age_mover_str $filelistLevel";
+				$age_mover_str = "$age_mover_str \"$filelistLevel\"";
 			}
 			else {
 				$age_mover_str = "$age_mover_str ''";
 			}
 			if ($cfg['filetypesf'] == "yes") {
-				$age_mover_str = "$age_mover_str $filetypesLevel";
+				$age_mover_str = "$age_mover_str \"$filetypesLevel\"";
 			}
 			else {
 				$age_mover_str = "$age_mover_str ''";
@@ -102,13 +102,13 @@ function startMover($options="") {
 				$age_mover_str = "$age_mover_str ''";
 			}
 			else {
-				$age_mover_str = "$age_mover_str $beforescript";
+				$age_mover_str = "$age_mover_str \"$beforescript\"";
 			}
 			if (empty($afterscript)) {
 				$age_mover_str = "$age_mover_str ''";
 			}
 			else {
-				$age_mover_str = "$age_mover_str $afterscript";
+				$age_mover_str = "$age_mover_str \"$afterscript\"";
 			}
 			if (empty($ctime)) {
 				$age_mover_str = "$age_mover_str ''";

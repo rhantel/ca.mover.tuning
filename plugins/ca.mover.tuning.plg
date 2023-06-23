@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "hugenbdd">
-<!ENTITY version   "2023.06.16">
-<!ENTITY md5       "75da5a4520d277a27574a59bb0a4824e">
+<!ENTITY version   "2023.06.21">
+<!ENTITY md5       "bca236d2866fd3693d039d95f59d2f9e">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,12 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2023.06.21
+- Fix spaces in before script file path (Swarles 6-18-2023)
+- Fix spaces in after script file path (Swarles 6-18-2023)
+- Fix spaces in ignore file list path (Swarles 6-18-2023)
+- Add check before moving to make sure file or directory exists to avoid binary mover lstat error. (DontWorryScro 6-19-2023)
+
 ###2023.06.16
 - Fix no empty directories file
 - Fix missing echo statement on hardlinks area. (Foux 6-16-2023)
