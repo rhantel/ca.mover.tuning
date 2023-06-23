@@ -88,7 +88,6 @@ Only move at this threshold of used cache space:
 
 > Set to the amount of disk space used on the cache drive for mover to run.
 
-#Here
 Move files off cache based on age?
 : <select name="age" size='1' class='narrow' onchange='$(".myage").toggleAttr("disabled")'>
        <?=mk_option($cfg['age'],'no','No')?>
@@ -181,7 +180,7 @@ Ignore files listed inside of a text file:
 </select>
 
 File list path:
-: <input type='text' name='filelistv' size='1' class='narrow myfilelistf' <?=$filelistfDisabled?> value='<?=$cfg['filelistv']?>'>
+: <input type='text' name='filelistv' size='1' class='narrow myfilelistf' value='<?=$cfg['filelistv']?>' <?=$filelistfDisabled?>>
 
 > Full path to a file that contains a list of files you want ignored from being moved off the cache pool.
 
@@ -231,7 +230,7 @@ Force move of all files on a schedule:
 > Select yes to run original mover on a custom cron schedule.
 
 Cron Schedule to force move all of files:
-: <input type='text' id='cronSchedule' name='cron' size='1' class='narrow mycron' <?=$cronDisabled?> value='<?=$cfg['cron']?>'>
+: <input type='text' id='cronSchedule' name='cron' size='1' class='narrow mycron' value='<?=$cfg['cron']?>' <?=$cronDisabled?>>
 
 > Cron Schedule entry example 20 4 1 * *   To run the first day of the month at 4:20 AM  
 
