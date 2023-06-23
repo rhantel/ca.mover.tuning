@@ -46,7 +46,6 @@ AFTERSCRIPT=""
 FINDSTR=""
 SIZEFINDSTR=""
 
-
 FILECOUNT=0
 TOTALCACHESIZE=0
 REMAININGCACHESIZE=0
@@ -66,818 +65,815 @@ GUI_ACTION="Calculating"
 NUM_FILES_TO_ARRAY=0
 NUM_FILES_TO_CACHE=0
 
+mvlogger() {
 
-mvlogger () {
+    if [ ! -d "/tmp/Mover" ]; then
+        echo "/tmp/Mover Directory does not exist. Creating it"
+        mkdir -p /tmp/Mover
+    fi
 
-	if [ ! -d "/tmp/Mover" ]; then
-		echo "/tmp/Mover Directory does not exist. Creating it"
-		mkdir -p /tmp/Mover
-	fi
-
-	if [ $LOGLEVEL = 1 ] ; then
-		echo "mvlogger: $1" >> $MOVER_LOG
-	fi
+    if [ $LOGLEVEL = 1 ]; then
+        echo "mvlogger: $1" >>$MOVER_LOG
+    fi
 
 }
 
-function is_zfs_mountpoint_fstype()
-{
-        local result
-        result=`findmnt $1 -o fstype | tail -n 1`
-        [ "$result" = "zfs" ]
-        return
+function is_zfs_mountpoint_fstype() {
+    local result
+    result=$(findmnt $1 -o fstype | tail -n 1)
+    [ "$result" = "zfs" ]
+    return
 }
 
-moverStatusWrite () {
-        #echo "test write"
-        #Writes to file /usr/local/emhttp/state/mover.ini GUI update variables 
-        echo "TotalToArray=${TOTALCACHESIZE}"  > $MOVER_STATUS
-        echo "RemainToArray=${REMAININGCACHESIZE}" >> $MOVER_STATUS
-	echo "TotalFromArray=${TOTALARRAYSIZE}" >> $MOVER_STATUS
-	echo "RemainFromArray=${REMAININGARRAYSIZE}" >> $MOVER_STATUS
-	echo "File=${GUI_CURRENT_FILE}" >> $MOVER_STATUS
-	echo "Action=${GUI_ACTION}" >> $MOVER_STATUS
+moverStatusWrite() {
+    #echo "test write"
+    #Writes to file /usr/local/emhttp/state/mover.ini GUI update variables
+    echo "TotalToArray=${TOTALCACHESIZE}" >$MOVER_STATUS
+    echo "RemainToArray=${REMAININGCACHESIZE}" >>$MOVER_STATUS
+    echo "TotalFromArray=${TOTALARRAYSIZE}" >>$MOVER_STATUS
+    echo "RemainFromArray=${REMAININGARRAYSIZE}" >>$MOVER_STATUS
+    echo "File=${GUI_CURRENT_FILE}" >>$MOVER_STATUS
+    echo "Action=${GUI_ACTION}" >>$MOVER_STATUS
 }
 
 #Move each directory, starting with their subdirectories first ony if they are empty..
-loopdirectories () {
+loopdirectories() {
 
-	# Sort the directory list in reverse order with subdirectories first	
-	if [ -f "$CUSTOM_MOVER_DIRECTORYLIST" ]; then
-	  while read DIRECTORYFILEPATH; do
+    # Sort the directory list in reverse order with subdirectories first
+    if [ -f "$CUSTOM_MOVER_DIRECTORYLIST" ]; then
+        while read DIRECTORYFILEPATH; do
 
-		count=$(find "$DIRECTORYFILEPATH" -mindepth 1 | wc -l)
-		
-		#Test to see if the directory is empty.
-		if [ "$count" -gt 0 ]; then
-			mvlogger "Directory is not empty. Count: $count - $DIRECTORYFILEPATH"
-		else
-	
-			if [ "$TESTMODE" = "yes" ] ; then
-				###echo "TEST Mode: $TESTMODE  -  DIRECTORY: $DIRECTORYFILEPATH "
-				mvlogger "$DIRECTORYFILEPATH is empty, Count: $count - Send it to the mover"
-			else
-				mvlogger "$DIRECTORYFILEPATH is empty, Count: $count - Send it to the mover"
+            count=$(find "$DIRECTORYFILEPATH" -mindepth 1 | wc -l)
+
+            #Test to see if the directory is empty.
+            if [ "$count" -gt 0 ]; then
+                mvlogger "Directory is not empty. Count: $count - $DIRECTORYFILEPATH"
+            else
+
+                if [ "$TESTMODE" = "yes" ]; then
+                    ###echo "TEST Mode: $TESTMODE  -  DIRECTORY: $DIRECTORYFILEPATH "
+                    mvlogger "$DIRECTORYFILEPATH is empty, Count: $count - Send it to the mover"
+                else
+                    mvlogger "$DIRECTORYFILEPATH is empty, Count: $count - Send it to the mover"
 				if [ -e "$DIRECTORYFILEPATH" ]; then
-					echo "$DIRECTORYFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+                    echo "$DIRECTORYFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
 				else
 					mvlogger "$DIRECTORYFILEPATH does not exists, nothing to move, avoiding lstat error for mover"
 				fi
-			fi
+                fi
 
-		fi
+            fi
 
-	  done < <(cat $CUSTOM_MOVER_DIRECTORYLIST | sort -r -t'/' -k3,3nr -k4)
-	else	
-		mvlogger "No $CUSTOM_MOVER_DIRECTORYLIST created as no empty directories"
-	fi
+        done < <(cat $CUSTOM_MOVER_DIRECTORYLIST | sort -r -t'/' -k3,3nr -k4)
+    else
+        mvlogger "No $CUSTOM_MOVER_DIRECTORYLIST created as no empty directories"
+    fi
 
 }
-
 
 #Create function to write a semicolon delimited list of files to move. (Count, FilePath, Size)
-customFilelist () {
-        ##echo "Write a custom file in /tmp that contains the file count, filepath and size of file"
-        ##echo "Custom Mover File: $CUSTOM_MOVER_FILELIST"
+customFilelist() {
+    ##echo "Write a custom file in /tmp that contains the file count, filepath and size of file"
+    ##echo "Custom Mover File: $CUSTOM_MOVER_FILELIST"
 
-        ###Start looping through filelist one line at a time
-	touch $CUSTOM_MOVER_FILELIST
-        while read CACHEFILEPATH; do
-                CACHEFILESIZE=$(stat -c%s "$CACHEFILEPATH")
+    ###Start looping through filelist one line at a time
+    touch $CUSTOM_MOVER_FILELIST
+    while read CACHEFILEPATH; do
+        CACHEFILESIZE=$(stat -c%s "$CACHEFILEPATH")
 
-		if [ -d "$CACHEFILEPATH" ]; then
-			mvlogger "It's a Directory send to directory list $CUSTOM_MOVER_DIRECTORYLIST"
-			echo "$CACHEFILEPATH">>$CUSTOM_MOVER_DIRECTORYLIST
-		else
-			((FILECOUNT++))
-                	echo "$FILECOUNT;\"$CACHEFILEPATH\";$CACHEFILESIZE">>$CUSTOM_MOVER_FILELIST
-		fi
-        done <$MOVER_FILELIST
+        if [ -d "$CACHEFILEPATH" ]; then
+            mvlogger "It's a Directory send to directory list $CUSTOM_MOVER_DIRECTORYLIST"
+            echo "$CACHEFILEPATH" >>$CUSTOM_MOVER_DIRECTORYLIST
+        else
+            ((FILECOUNT++))
+            echo "$FILECOUNT;\"$CACHEFILEPATH\";$CACHEFILESIZE" >>$CUSTOM_MOVER_FILELIST
+        fi
+    done <$MOVER_FILELIST
 }
 
+loopcustomFilelist() {
+    #Reach through the CUSTOM MOVER FILELIST and send the filepath to the mover binary
 
-loopcustomFilelist () {
-        #Reach through the CUSTOM MOVER FILELIST and send the filepath to the mover binary
+    #Set Has Hard Links = False as we have to test for this use case.
+    HASHARDLINK=false
 
-	#Set Has Hard Links = False as we have to test for this use case.
-	HASHARDLINK=false
+    #Loop through the filelist and check to see if there are any hardlinks
+    while read HARDFILE; do
 
-	#Loop through the filelist and check to see if there are any hardlinks
-	while read HARDFILE; do
+        #Pull out FilePath
+        HARDFILEPATH=$(echo "$HARDFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
 
+        #Remove leading and trailing quotes
+        HARDFILEPATH=$(echo "$HARDFILEPATH" | sed 's/.\(.*\)./\1/')
+        mvlogger "Hard File Path: $HARDFILEPATH"
 
-                #Pull out FilePath
-                HARDFILEPATH=$(echo "$HARDFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
+        #Test for hardlinks of the file
+        LINK_COUNT=$(stat -c "%h" "$HARDFILEPATH")
+        mvlogger "LINK Count: $LINK_COUNT"
 
-		#Remove leading and trailing quotes
-		HARDFILEPATH=$(echo "$HARDFILEPATH" | sed 's/.\(.*\)./\1/')
-		mvlogger "Hard File Path: $HARDFILEPATH"
+        if [ "$LINK_COUNT" -gt 1 ]; then
+            mvlogger "File $HARDFILEPATH has $LINK_COUNT hard links."
 
-		#Test for hardlinks of the file
-		LINK_COUNT=$(stat -c "%h" "$HARDFILEPATH")
-		mvlogger "LINK Count: $LINK_COUNT"
+            HASHARDLINK=true
+        fi
 
-		if [ "$LINK_COUNT" -gt 1 ]; then
-			mvlogger "File $HARDFILEPATH has $LINK_COUNT hard links."
-			
-			HASHARDLINK=true
-		fi
+    done <$CUSTOM_MOVER_FILELIST
 
+    mvlogger "Hard Link Status: $HASHARDLINK"
 
-	done <$CUSTOM_MOVER_FILELIST
+    #Determine if we can loop through each file or if we have to send the whole filelist to mover binary.
+    if [ "$HASHARDLINK" = true ]; then
+        mvlogger "File List contains hardlinks, sending all of the filelist to mover binary"
 
-	mvlogger "Hard Link Status: $HASHARDLINK"
+        #Loop through the filelist and create a new "HARDLinks custom mover file"
+        while read HARD_LINK_FILELIST; do
+            #Pull out FilePath only.
+            HARD_PATH=$(echo "$HARD_LINK_FILELIST" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
 
+            #Remove leading and training quotes.
+            HARD_PATH=$(echo "$HARD_PATH" | sed 's/.\(.*\)./\1/')
 
-	#Determine if we can loop through each file or if we have to send the whole filelist to mover binary.
-	if [ "$HASHARDLINK" = true ]; then
-		mvlogger "File List contains hardlinks, sending all of the filelist to mover binary"
+            mvlogger "Adding $HARD_PATH to $HARD_MOVER_FILELIST"
+            echo "$HARD_PATH" >>$HARD_MOVER_FILELIST
+        done <$CUSTOM_MOVER_FILELIST
 
-		 #Loop through the filelist and create a new "HARDLinks custom mover file"
-                 while read HARD_LINK_FILELIST; do
-                 	#Pull out FilePath only.
-                 	HARD_PATH=$(echo "$HARD_LINK_FILELIST" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
+        #Send Files to Binary mover
+        if [ "$TESTMODE" = "yes" ]; then
+            mvlogger "Running in Test Mode: HARDLINKS"
+        else
+            #Send the hard links filelist into mover.
+            mvlogger "Sending $HARD_MOVER_FILELIST to binary mover"
+            cat "$HARD_MOVER_FILELIST" | /usr/local/sbin/move -d $LOGLEVEL
 
-			#Remove leading and training quotes.
-			HARD_PATH=$(echo "$HARD_PATH" | sed 's/.\(.*\)./\1/')
+        fi
 
-                        mvlogger "Adding $HARD_PATH to $HARD_MOVER_FILELIST"
-			echo "$HARD_PATH">>$HARD_MOVER_FILELIST
+    else
+        #File List contains no hardlinks.  loop through each file.
 
-                 done <$CUSTOM_MOVER_FILELIST
+        while read CUSTOMFILE; do
+            ##Code for softstop here
+            if [ -e $SOFTSTOPFILE ]; then
+                echo "Soft Stop requested"
+                mvlogger "Soft Stopping requested"
+                break
+            fi
 
-		
-		#Send Files to Binary mover
-		if [ "$TESTMODE" = "yes" ] ; then
-			mvlogger "Running in Test Mode: HARDLINKS"
-		else
-			#Send the hard links filelist into mover.
-			mvlogger "Sending $HARD_MOVER_FILELIST to binary mover"
-			cat "$HARD_MOVER_FILELIST" | /usr/local/sbin/move -d $LOGLEVEL 
+            #Pull out File Position Number
+            CUSTOMFILEPOSITION=$(echo "$CUSTOMFILE" | sed -n 's/\([^;]*\).*/\1/p')
 
-		fi
-			
+            #Pull out FilePath
+            CUSTOMFILEPATH=$(echo "$CUSTOMFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
 
-	else
-	#File List contains no hardlinks.  loop through each file.
+            #Pull out File Size
+            CUSTOMFILESIZE=$(echo "$CUSTOMFILE" | sed -n 's/.*;\(.*\)/\1/p')
 
+            ##echo "Position: $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
+            mvlogger "Position:  $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
 
-        	while read CUSTOMFILE; do
-                	##Code for softstop here
-                	if [ -e $SOFTSTOPFILE ]; then
-                	        echo "Soft Stop requested"
-                	        mvlogger "Soft Stopping requested"
-                	        break
-                	fi
+            #Set mover.ini variables
+            GUI_CURRENT_FILE=$CUSTOMFILEPATH
+            GUI_SIZE_LEFT=$(echo $REMAININGCACHESIZE | numfmt --to iec --format "%8.2f")
+            GUI_ACTION="Moving $CUSTOMFILEPOSITION of $NUM_FILES_TO_ARRAY to Array.      $GUI_SIZE_LEFT remaining."
 
+            moverStatusWrite
 
-                	#Pull out File Position Number
-                	CUSTOMFILEPOSITION=$(echo "$CUSTOMFILE" | sed -n 's/\([^;]*\).*/\1/p')
+            #Send File to Mover Binary
+            if [ "$TESTMODE" = "yes" ]; then
+                mvlogger "Running in Test Mode: $CUSTOMFILEPATH"
+                sleep 0.1
+            else
+                #	mvlogger "Not in Test mode"
+                #Remove front and back quote marks.
+                CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/')
 
-                	#Pull out FilePath
-                	CUSTOMFILEPATH=$(echo "$CUSTOMFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
-
-                	#Pull out File Size
-                	CUSTOMFILESIZE=$(echo "$CUSTOMFILE" | sed -n 's/.*;\(.*\)/\1/p')
-
-                	##echo "Position: $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
-			mvlogger "Position:  $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
-	
-			#Set mover.ini variables
-			GUI_CURRENT_FILE=$CUSTOMFILEPATH
-			GUI_SIZE_LEFT=$(echo $REMAININGCACHESIZE | numfmt --to iec --format "%8.2f") 
-			GUI_ACTION="Moving $CUSTOMFILEPOSITION of $NUM_FILES_TO_ARRAY to Array.      $GUI_SIZE_LEFT remaining."
-
-			moverStatusWrite
-
-                	#Send File to Mover Binary
-			if [ "$TESTMODE" = "yes" ] ; then
-				mvlogger "Running in Test Mode: $CUSTOMFILEPATH"
-				sleep 0.1
-			else
-			#	mvlogger "Not in Test mode"
-				#Remove front and back quote marks.
-                        	CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/')
-				
 				if [ -e "$CUSTOMFILEPATH" ]; then
-					echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+                echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
 				else
 					mvlogger "$CUSTOMFILEPATH does not exists, skipping to avoid lstat error"
 				fi
-			fi
-	
-                	#Reduce Remaining Cache Size
-                	((REMAININGCACHESIZE-=$CUSTOMFILESIZE))
+            fi
 
-                	#Write Status
-                	moverStatusWrite
+            #Reduce Remaining Cache Size
+            ((REMAININGCACHESIZE -= $CUSTOMFILESIZE))
 
+            #Write Status
+            moverStatusWrite
 
-        	done <$CUSTOM_MOVER_FILELIST
-	fi
+        done <$CUSTOM_MOVER_FILELIST
+    fi
 }
 
-loopArrayFilelist () {
-        #Reach through the CUSTOM MOVER FILELIST and send the filepath to the mover binary
+loopArrayFilelist() {
+    #Reach through the CUSTOM MOVER FILELIST and send the filepath to the mover binary
 
-        ##Start looping
-        while read CUSTOMFILE; do
-		#Check to see if there is a soft stop requested.
-                if [ -e $SOFTSTOPFILE ]; then
-                        echo "Soft Stop requested"
-                        mvlogger "Soft Stopping requested"
-                        break
-		fi
+    ##Start looping
+    while read CUSTOMFILE; do
+        #Check to see if there is a soft stop requested.
+        if [ -e $SOFTSTOPFILE ]; then
+            echo "Soft Stop requested"
+            mvlogger "Soft Stopping requested"
+            break
+        fi
 
-                #Pull out File Position Number
-                CUSTOMFILEPOSITION=$(echo "$CUSTOMFILE" | sed -n 's/\([^;]*\).*/\1/p')
+        #Pull out File Position Number
+        CUSTOMFILEPOSITION=$(echo "$CUSTOMFILE" | sed -n 's/\([^;]*\).*/\1/p')
 
-                #Pull out FilePath
-                CUSTOMFILEPATH=$(echo "$CUSTOMFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
+        #Pull out FilePath
+        CUSTOMFILEPATH=$(echo "$CUSTOMFILE" | sed -n 's/^[^;]*;\(.*\);[^;]*$/\1/p')
 
-                #Pull out File Size
-                CUSTOMFILESIZE=$(echo "$CUSTOMFILE" | sed -n 's/.*;\(.*\)/\1/p')
+        #Pull out File Size
+        CUSTOMFILESIZE=$(echo "$CUSTOMFILE" | sed -n 's/.*;\(.*\)/\1/p')
 
-                mvlogger "Position:  $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
+        mvlogger "Position:  $CUSTOMFILEPOSITION     Path: $CUSTOMFILEPATH   Size: $CUSTOMFILESIZE"
 
-                #Set mover.ini variables
-                GUI_CURRENT_FILE=$CUSTOMFILEPATH
-		GUI_SIZE_LEFT=$(echo $REMAININGCACHESIZE | numfmt --to iec --format "%8.2f")
-                GUI_ACTION="Moving $CUSTOMFILEPOSITION of $NUM_FILES_TO_CACHE to Cache Pools.     $GUI_SIZE_LEFT remaining."
+        #Set mover.ini variables
+        GUI_CURRENT_FILE=$CUSTOMFILEPATH
+        GUI_SIZE_LEFT=$(echo $REMAININGCACHESIZE | numfmt --to iec --format "%8.2f")
+        GUI_ACTION="Moving $CUSTOMFILEPOSITION of $NUM_FILES_TO_CACHE to Cache Pools.     $GUI_SIZE_LEFT remaining."
 
-		moverStatusWrite
+        moverStatusWrite
 
-                #Send File to Mover Binary
-                if [ "$TESTMODE" = "yes" ] ; then
-                        mvlogger "Running in Test Mode: $CUSTOMFILEPATH"
-			sleep 0.25
-                else
-                #       mvlogger "Not in Test mode"
+        #Send File to Mover Binary
+        if [ "$TESTMODE" = "yes" ]; then
+            mvlogger "Running in Test Mode: $CUSTOMFILEPATH"
+            sleep 0.25
+        else
+            #       mvlogger "Not in Test mode"
 
-			#Remove front and back quote marks.
-			CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/') 	
+            #Remove front and back quote marks.
+            CUSTOMFILEPATH=$(echo "$CUSTOMFILEPATH" | sed 's/.\(.*\)./\1/')
 
 			if [ -e "$CUSTOMFILEPATH" ]; then
-				echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
+            echo "$CUSTOMFILEPATH" | /usr/local/sbin/move -d $LOGLEVEL
 			else
 				mvlogger "$CUSTOMFILEPATH does not exists, not moving to avoid lstat error."
 			fi
+        fi
+
+        #Reduce Remaining Cache Size
+        ((REMAININGARRAYSIZE -= $CUSTOMFILESIZE))
+
+        #Write Status
+        moverStatusWrite
+
+    done <$CUSTOM_CACHE_FILELIST
+}
+
+customArrayFilelist() {
+    ##echo "Write a custom file in /tmp that contains the file count, filepath and size of file"
+    ##echo "Custom Mover File: $CUSTOM_CACHE_FILELIST"
+
+    ###Start looping through filelist one line at a time
+    touch $CUSTOM_CACHE_FILELIST
+    FILECOUNT=0
+
+    mvlogger "Cache File List: $CACHE_FILELIST"
+    while read CACHEFILEPATH; do
+        CACHEFILESIZE=$(stat -c%s "$CACHEFILEPATH")
+
+        if [ -d "$CACHEFILEPATH" ]; then
+            mvlogger "It's a Directory don't include: $CACHEFILEPATH"
+        else
+            ((FILECOUNT++))
+            echo "$FILECOUNT;\"$CACHEFILEPATH\";$CACHEFILESIZE" >>$CUSTOM_CACHE_FILELIST
+        fi
+    done <$CACHE_FILELIST
+}
+
+totalsizeFilelist() {
+    #Loop throug the custom mover filelist and add up all the sizes for each entry.
+
+    #echo "Grabbing total filesize"
+
+    #start looping
+    while read CUSTOMLINE; do
+        #PULL out file size
+        ###echo "$CUSTOMLINE"
+        CUSTOMLINESIZE=$(echo "$CUSTOMLINE" | sed -n 's/.*;\(.*\)/\1/p')
+        ###echo "Custom Size:"
+        ###echo $CUSTOMLINESIZE
+
+        ((TOTALCACHESIZE += $CUSTOMLINESIZE))
+
+    done <$CUSTOM_MOVER_FILELIST
+
+}
+
+totalsizeArraylist() {
+    #Loop throug the custom mover filelist and add up all the sizes for each entry.
+
+    #echo "Grabbing total filesize"
+
+    #start looping
+    while read CUSTOMFILE; do
+        #PULL out file size
+        CUSTOMFILESIZE=$(echo "$CUSTOMFILE" | sed -n 's/.*;\(.*\)/\1/p')
+
+        ((TOTALARRAYSIZE += $CUSTOMFILESIZE))
+
+    done <$CUSTOM_CACHE_FILELIST
+
+}
+
+mvallfrompool() { 
+    mvlogger "Checking to see if we should move all files from share."
+    mvlogger "Move All Cache Threshold: $CACHETHRESH"
+
+    for POOL in /boot/config/pools/*.cfg; do
+        # Check to see if each pool is over the move all cache-yes shares files to array
+        POOLPATH=/mnt/$(basename "$POOL" .cfg)
+        if is_zfs_mountpoint_fstype "$POOLPATH"; then
+            mvlogger "The fstype of $POOLPATH is zfs."
+            POOLPCTUSEDA=$(zpool get -o value capacity $(basename "$POOL" .cfg) | tail -n 1 | tr -d '%')
+        else
+            POOLPCTUSEDA=$(df --output=pcent $POOLPATH | tail -n 1 | tr -d '%')
+        fi
+        mvlogger "$POOLPATH PCT USED: $POOLPCTUSEDA"
+
+        if [ $POOLPCTUSEDA -gt $CACHETHRESH ]; then
+            mvlogger "Pool $POOLPATH is above 'move all' percentage, moving all cache-yes shares to array"
+
+            for SHAREPATH in $POOLPATH/*/; do
+                SHARE=$(basename "$SHAREPATH")
+                if grep -qs 'shareUseCache="yes"' "/boot/config/shares/${SHARE}.cfg"; then
+                    cfgPath="/boot/config/plugins/ca.mover.tuning/shareOverrideConfig/$SHARENAME.cfg"
+                    if [ -f $cfgPath ] && grep -qs 'omovercfg="no"' "$cfgPath"; then
+                        #Skip this share
+                        if [ "$TESTMODE" = "yes" ]; then
+                            mvlogger "Running in Test Mode: \"$SHARE\" skipped."
+                        fi
+                    else
+                        MVALLSTR="find \"$SHAREPATH\" -depth"
+                        eval "$MVALLSTR>>$MOVER_FILELIST"
+
+                        if [ "$TESTMODE" = "yes" ]; then
+                            mvlogger "Running in Test Mode: $MVALLSTR"
+                        fi
+                    fi
+                elif [ "$TESTMODE" = "yes" ]; then
+                    mvlogger "Running in Test Mode: \"$SHARE\" skipped."
                 fi
+            done
+        fi
+    done
 
-                #Reduce Remaining Cache Size
-                ((REMAININGARRAYSIZE-=$CUSTOMFILESIZE))
-
-                #Write Status
-                moverStatusWrite
-
-
-        done <$CUSTOM_CACHE_FILELIST
-}
-
-customArrayFilelist () {
-        ##echo "Write a custom file in /tmp that contains the file count, filepath and size of file"
-        ##echo "Custom Mover File: $CUSTOM_CACHE_FILELIST"
-
-        ###Start looping through filelist one line at a time
-        touch $CUSTOM_CACHE_FILELIST
-        FILECOUNT=0
-
-	mvlogger "Cache File List: $CACHE_FILELIST"
-        while read CACHEFILEPATH; do
-                CACHEFILESIZE=$(stat -c%s "$CACHEFILEPATH")
-
-                if [ -d "$CACHEFILEPATH" ]; then
-                        mvlogger "It's a Directory don't include: $CACHEFILEPATH"
-                else
-                        ((FILECOUNT++))
-                        echo "$FILECOUNT;\"$CACHEFILEPATH\";$CACHEFILESIZE">>$CUSTOM_CACHE_FILELIST
-                fi
-        done <$CACHE_FILELIST
-}
-
-totalsizeFilelist () {
-        #Loop throug the custom mover filelist and add up all the sizes for each entry.
-
-        #echo "Grabbing total filesize"
-
-        #start looping
-        while read CUSTOMLINE; do
-                #PULL out file size
-		###echo "$CUSTOMLINE"
-                CUSTOMLINESIZE=$(echo "$CUSTOMLINE" | sed -n 's/.*;\(.*\)/\1/p')
-		###echo "Custom Size:"
-		###echo $CUSTOMLINESIZE
-
-		((TOTALCACHESIZE+=$CUSTOMLINESIZE))
-
-        done <$CUSTOM_MOVER_FILELIST
+    mvlogger "Done checking Move All from Share"
 
 }
-
-totalsizeArraylist () {
-        #Loop throug the custom mover filelist and add up all the sizes for each entry.
-
-        #echo "Grabbing total filesize"
-
-        #start looping
-        while read CUSTOMFILE; do
-                #PULL out file size
-                CUSTOMFILESIZE=$(echo "$CUSTOMFILE" | sed -n 's/.*;\(.*\)/\1/p')
-
-                ((TOTALARRAYSIZE+=$CUSTOMFILESIZE))
-
-        done <$CUSTOM_CACHE_FILELIST
-
-}
-
-
-
-mvallfrompool() {
-	mvlogger "Checking to see if we should move all files from share."
-	mvlogger "Move All Cache Threshold: $CACHETHRESH"
-
-	for POOL in /boot/config/pools/*.cfg ; do
-		# Check to see if each pool is over the move all cache-yes shares files to array
-		POOLPATH=/mnt/$(basename "$POOL" .cfg)
-		if is_zfs_mountpoint_fstype "$POOLPATH" ; then
-			mvlogger "The fstype of $POOLPATH is zfs."
-			POOLPCTUSEDA=`zpool get -o value capacity $(basename "$POOL" .cfg) | tail -n 1 | tr -d '%'`
-		else
-			POOLPCTUSEDA=`df --output=pcent $POOLPATH | tail -n 1 | tr -d '%'`
-		fi
-		mvlogger "$POOLPATH PCT USED: $POOLPCTUSEDA"
-
-		if [ $POOLPCTUSEDA -gt $CACHETHRESH ] ; then
-			mvlogger "Pool $POOLPATH is above 'move all' percentage, moving all cache-yes shares to array"
-
-			for SHAREPATH in /mnt/$(basename "$POOL" .cfg)/*/ ; do
-				SHARE=$(basename "$SHAREPATH")
-				if grep -qs 'shareUseCache="yes"' "/boot/config/shares/${SHARE}.cfg" ; then
-					MVALLSTR="find \"$SHAREPATH\" -depth"
-					eval "$MVALLSTR>>$MOVER_FILELIST"
-
-		                	if [ "$TESTMODE" = "yes" ] ; then
-		                        	mvlogger "Running in Test Mode: $MVALLSTR"
-                        		fi
-
-					
-
-				fi
-			done
-		fi
-	done
-
-	mvlogger "Done checking Move All from Share"
-
-
-}
-
 
 if [ -f $CFGFILE ]; then
-	if ! grep -qs 'shareCacheEnabled="yes"' $CFGFILE ; then
-		echo "mover: cache not enabled"
-		exit 2
-	fi
-	if grep -qs 'shareMoverLogging="yes"' $CFGFILE ; then
-		LOGLEVEL=1
-		echo "Log Level: $LOGLEVEL"
-	fi
+    if ! grep -qs 'shareCacheEnabled="yes"' $CFGFILE; then
+        echo "mover: cache not enabled"
+        exit 2
+    fi
+    if grep -qs 'shareMoverLogging="yes"' $CFGFILE; then
+        LOGLEVEL=1
+        echo "Log Level: $LOGLEVEL"
+    fi
 fi
 
-##Add /tmp/Mover directory creation command here.
+mvlogger "*********************************MOVER START*******************************"
 
+#Moved variable assignment into a function
+setMoverSettings() {
+    #Test input variables
+    # 1: start/stop/kill 2: Age of files 3: Size of files 4: Sparness amount 5: Exclude file list file path
 
-mvlogger  "*********************************MOVER START*******************************"
-
-#Test input variables
-# 1: start/stop/kill 2: Age of files 3: Size of files 4: Sparness amount 5: Exclude file list file path
-
-if [ -z "$2" ] ; then
-        mvlogger "No Age  Argument Supplied"
+    if [ -z "$2" ]; then
+        mvlogger "No Age Argument Supplied"
         AGE=0
-else
-	mvlogger "Age supplied $2"
+    else
+        mvlogger "Age supplied: $2"
         AGE=$2
-fi
+    fi
 
+    if [ -z "$3" ]; then
+        mvlogger "No Size Argument Supplied"
+        SIZE=0
+    else
+        mvlogger "Size supplied: $3"
+        SIZE=$3
+    fi
 
-if [ -z "$3" ] ; then
-	mvlogger "No Size Argument Supplied"
-	SIZE=0	
-else
-	mvlogger "Size supplied"
-	SIZE=$3
-fi
+    if [ -z "$4" ]; then
+        mvlogger "No Sparness Argument Supplied"
+        SPARSENESS=0
+    else
+        mvlogger "Sparness supplied: $4"
+        SPARSENESS=$4
+    fi
 
-if [ -z "$4" ] ; then
-	mvlogger "No Sparness Argument Supplied"
-	SPARSENESS=0	
-else
-	mvlogger "Sparness supplied"
-	SPARSENESS=$4
-fi
-
-if [ -z "$5" ] ; then
-	mvlogger "No Skipfiles Argument Supplied"
-	SKIPFILESLIST=""	
-else
-	###echo "Skipfilelist supplied"
-	###SKIPFILESLIST=chomp($5)
-	SKIPFILESLIST=$5
-	SKIPFILESLIST=`echo $SKIPFILESLIST | sed 's/ *$//g'`
-	mvlogger "SKIP FILE: $SKIPFILESLIST"
-fi
-
-if [ -z "$6" ] ; then
+    if [ -z "$5" ]; then
         mvlogger "No Skipfiles Argument Supplied"
+        SKIPFILESLIST=""
+    else
+        ###echo "Skipfilelist supplied"
+        ###SKIPFILESLIST=chomp($5)
+        SKIPFILESLIST=$5
+        SKIPFILESLIST=$(echo $SKIPFILESLIST | sed 's/ *$//g')
+        mvlogger "SKIP FILE: $SKIPFILESLIST"
+    fi
+
+    if [ -z "$6" ]; then
+        mvlogger "No Skip File Types Argument Supplied"
         SKIPFILETYPES=""
-else
+    else
         ###echo "Skipfiletypes supplied"
         SKIPFILETYPES=$6
-        SKIPFILETYPES=`echo $SKIPFILETYPES | sed 's/ *$//g'`
+        SKIPFILETYPES=$(echo $SKIPFILETYPES | sed 's/ *$//g')
         mvlogger "SKIP FILE TYPES: $SKIPFILETYPES"
-fi
+    fi
 
-if [ -z "$7" ] ; then
-	mvlogger "No Before Script Argument Supplied"
-	BEFORESCRIPT=""
-else
-	BEFORESCRIPT=$7
-	mvlogger "BEFORESCRIPT: $BEFORESCRIPT"
-fi
+    if [ -z "$7" ]; then
+        mvlogger "No Before Script Argument Supplied"
+        BEFORESCRIPT=""
+    else
+        BEFORESCRIPT=$7
+        mvlogger "BEFORESCRIPT: $BEFORESCRIPT"
+    fi
 
-if [ -z "$8" ] ; then
-	mvlogger "No After Script Argument Supplied"
-	AFTERSCRIPT=""
-else
-	AFTERSCRIPT=$8
-	mvlogger "AFTERSCRIPT: $AFTERSCRIPT"
-fi
+    if [ -z "$8" ]; then
+        mvlogger "No After Script Argument Supplied"
+        AFTERSCRIPT=""
+    else
+        AFTERSCRIPT=$8
+        mvlogger "AFTERSCRIPT: $AFTERSCRIPT"
+    fi
 
-if [ -z "$9" ] ; then
-	mvlogger "No CTIME Argument Supplied"
-	CTIMEA=""
-else
-	CTIMEA=$9
-	mvlogger "CTIME Argument: $CTIMEA"
-fi
+    if [ -z "$9" ]; then
+        mvlogger "No CTIME Argument Supplied"
+        CTIMEA=""
+    else
+        CTIMEA=$9
+        mvlogger "CTIME Argument: $CTIMEA"
+    fi
 
-if [ -z "${10}" ] ; then
+    if [ -z "${10}" ]; then
         mvlogger "No Original Mover Threshold Percent Supplied"
         CACHETHRESH=""
-else
+    else
         CACHETHRESH=${10}
         mvlogger "CACHE THRESH to Move all Cache-Yes shares to array: $CACHETHRESH"
-fi
+    fi
 
-if [ -z "${11}" ] ; then
+    if [ -z "${11}" ]; then
         mvlogger "No Test Mode Argument Supplied"
         TESTMODE=""
-else
+    else
         TESTMODE=${11}
         mvlogger "Test Mode Argument: $TESTMODE"
-fi
+    fi
 
-if [ -z "${12}" ] ; then
+    if [ -z "${12}" ]; then
         mvlogger "No Ignore Hidden Files Argument Supplied"
         HIDDENFILES=""
-else
+    else
         HIDDENFILES=${12}
         mvlogger "Ignore Hidden Files Argument: $HIDDENFILES"
-fi
+    fi
 
-
-
+    #Doesn't get used for now, but wil be relevant if threshold value is added per-share settings
+    if [ -z "${13}" ]; then
+        mvlogger "No Threshold Value Present. Default to 0."
+        THRESHOLD="0"
+    else
+        THRESHOLD=${13}
+        mvlogger "Threshold Percent: $THRESHOLD"
+    fi
+}
+aa=$1 bb=$2 cc=$3 dd=$4 ee=$5 ff=$6 gg=$7 hh=$8 ii=$9 jj=${10} kk=${11} ll=${12} mm=${13}      #Didn't want to reuse age, size, etc
+setMoverSettings "$aa" "$bb" "$cc" "$dd" "$ee" "$ff" "$gg" "$hh" "$ii" "$jj" "$kk" "$ll" "$mm" #Set values on first run
 
 start() {
-  if [ -f $PIDFILE ]; then
-    if ps h $(cat $PIDFILE) | grep mover ; then
-        echo "mover: already running"
-        exit 1
+    if [ -f $PIDFILE ]; then
+        if ps h $(cat $PIDFILE) | grep mover; then
+            echo "mover: already running"
+            exit 1
+        fi
     fi
-  fi
 
-  # Only start if cache enabled and present
-  if ! grep -qs 'shareCacheEnabled="yes"' $CFGFILE ; then
-    echo "mover: cache not enabled"
-    exit 2
-  fi
+    # Only start if cache enabled and present
+    if ! grep -qs 'shareCacheEnabled="yes"' $CFGFILE; then
+        echo "mover: cache not enabled"
+        exit 2
+    fi
 
-  if ! mountpoint -q /mnt/user0 ; then
-    echo "mover: cache not present, or only cache present"
-    exit 3
-  fi
+    if ! mountpoint -q /mnt/user0; then
+        echo "mover: cache not present, or only cache present"
+        exit 3
+    fi
 
-  #Remove any old /var/run/moversoft.stop files
-  if [ -e $SOFTSTOPFILE  ]; then
-    rm $SOFTSTOPFILE
-    echo "Mover soft stop file removed."
-  fi
+    #Remove any old /var/run/moversoft.stop files
+    if [ -e $SOFTSTOPFILE ]; then
+        rm $SOFTSTOPFILE
+        echo "Mover soft stop file removed."
+    fi
 
-  echo $$ >/var/run/mover.pid
-  [[ $LOGLEVEL -gt 0 ]] && echo "mover: started"
+    echo $$ >/var/run/mover.pid
+    [[ $LOGLEVEL -gt 0 ]] && echo "mover: started"
 
-  #Make /tmp/Mover directory silently.
-  ###mkdir -p /tmp/Mover
+    #Make /tmp/Mover directory silently.
+    ###mkdir -p /tmp/Mover
 
-  #Delete helper files over 5 days old.
-  find /tmp/Mover/* -daystart -mtime +5 -name '*.list' -delete
+    #Delete helper files over 5 days old.
+    find /tmp/Mover/* -daystart -mtime +5 -name '*.list' -delete
 
-  #Delete Mover Log files over 10 days old.
-  find /tmp/Mover/* -daystart -mtime +10 -name '*.log' -delete
+    #Delete Mover Log files over 10 days old.
+    find /tmp/Mover/* -daystart -mtime +10 -name '*.log' -delete
 
-
-  shopt -s nullglob
+    shopt -s nullglob
 
     #Run mover before script if specified.
-    if [ -z "$BEFORESCRIPT" ] ; then
-	mvlogger "No Script to Run."
+    if [ -z "$BEFORESCRIPT" ]; then
+        mvlogger "No Script to Run."
     else
-    	if [ -f "$BEFORESCRIPT" ] && [ -x "$BEFORESCRIPT" ] ; then
-		mvlogger "Before script will be executed: $BEFORESCRIPT"
-		eval \"$BEFORESCRIPT\"
-	else
-		mvlogger "Before script file does not exist or is not executable.  Skipping."
-	fi
+        if [ -f "$BEFORESCRIPT" ] && [ -x "$BEFORESCRIPT" ]; then
+            mvlogger "Before script will be executed: $BEFORESCRIPT"
+            eval \"$BEFORESCRIPT\"
+        else
+            mvlogger "Before script file does not exist or is not executable. Skipping."
+        fi
     fi
 
-    #Check to see if we should move all files based on total cache pool levels.	
-    if [ "$CACHETHRESH" = "" ] ; then
-	mvlogger "CACHETHRESH is blank"
+    #Check to see if we should move all files based on total cache pool levels.
+    if [ "$CACHETHRESH" = "" ]; then
+        mvlogger "CACHETHRESH is blank"
     else
-	mvlogger "CACHETHRESH: $CACHETHRESH"
-	#CALL FUNCTION
-	mvallfrompool
+        mvlogger "CACHETHRESH: $CACHETHRESH"
+        #CALL FUNCTION
+        mvallfrompool
     fi
 
+    for SHARECFG in /boot/config/shares/*; do
+        overrideFlag=0
 
+        if grep -qs 'shareUseCache="yes"' "$SHARECFG"; then
+            #Start Creating the Find String.
+            #Sharename
+            ###########SHARENAME="$(basename $SHARECFG .cfg)"
+            SHARENAME="$(basename "$SHARECFG" .cfg)"
+            mvlogger "Share Name Only: $SHARENAME"
 
-    for SHARECFG in /boot/config/shares/* ; do 
+            #Check to see if this share has a mover settings override, if yes set overrideFlag and change settings
+            if [ -f "/boot/config/plugins/ca.mover.tuning/shareOverrideConfig/$SHARENAME.cfg" ]; then
+                if grep -qs 'moverOverride="yes"' "/boot/config/plugins/ca.mover.tuning/shareOverrideConfig/$SHARENAME.cfg"; then
+                    overrideFlag=1
+                    mvlogger "-----Updating-Mover-Based-On-\"$SHARENAME\"-Settings-----"
+                    eval setMoverSettings $(php /usr/local/emhttp/plugins/ca.mover.tuning/perShareMover.php $SHARENAME) #Gets share settings from share .cfg stored in "/boot/config/plugins/ca.mover.tuning/shareOverrideConfig/*"
+                fi
+            fi
 
+            CACHEPOOLNAME=$(cat "$SHARECFG" | grep shareCachePool | cut -d'=' -f 2 | tr -d '"' | tr -d '\r')
+            mvlogger "Cache Pool Name: $CACHEPOOLNAME "
 
-	if grep -qs 'shareUseCache="yes"' "$SHARECFG" ; then
-    		#Start Creating the Find String.
-		#Sharename
-		###########SHARENAME="$(basename $SHARECFG .cfg)"
-		SHARENAME="$(basename "$SHARECFG" .cfg)"
-		mvlogger "Share Name Only: $SHARENAME"
+            if [ -z "$CACHEPOOLNAME" ]; then
+                mvlogger "No shareCachePool entry found in config file, defaulting to cache"
+                CACHEPOOLNAME="cache"
+            fi
 
-                CACHEPOOLNAME=`cat "$SHARECFG" | grep shareCachePool | cut -d'=' -f 2 | tr -d '"' | tr -d '\r'`
-                mvlogger "Cache Pool Name: $CACHEPOOLNAME "
+            ### Add Check to see if we need to move based on %, else exit.
+            PCTLIMIT=$(cat /boot/config/plugins/ca.mover.tuning/ca.mover.tuning.cfg | grep $CACHEPOOLNAME"=" | rev | cut -c2-3 | rev) #Does this ever get populated?
+            mvlogger "$CACHEPOOLNAME Threshold Pct: $PCTLIMIT"
 
-		if [ -z "$CACHEPOOLNAME" ] ; then
-                	mvlogger "No shareCachePool entry found in config file, defaulting to cache"
-                        CACHEPOOLNAME="cache"
+            ### Read in default threshold limit.
+            DFTPCTLIMIT=$(cat /boot/config/plugins/ca.mover.tuning/ca.mover.tuning.cfg | grep threshold"=" | rev | cut -c2-3 | rev | tr -d '"')
+            mvlogger "OVERALL Threshold: $DFTPCTLIMIT"
+
+            SHAREPATH="/mnt/$CACHEPOOLNAME/$SHARENAME"
+            mvlogger "Share Path: $SHAREPATH"
+
+            #Find the current percent of used size of pool.
+            if is_zfs_mountpoint_fstype "/mnt/$CACHEPOOLNAME"; then
+                mvlogger "$CACHEPOOLNAME is zfs."
+                POOLPCTUSED=$(zpool get -o value capacity $CACHEPOOLNAME | tail -n 1 | tr -d '%')
+            else
+                POOLPCTUSED=$(df --output=pcent /mnt/$CACHEPOOLNAME | tail -n 1 | tr -d '%')
+            fi
+            mvlogger "Pool Pct Used: $POOLPCTUSED %"
+
+            #Determine which percent limit we are going to use, in case ca.mover.tuning.cfg does not have a cachepool percent limit entry.
+            if [ -z "$PCTLIMIT" ]; then
+                DEFAULTTHRESHOLD=$DFTPCTLIMIT
+                mvlogger "DFTPCT LIMIT USED FOR SETTING: $DFTPCTLIMIT"
+
+            else
+                DEFAULTTHRESHOLD=$PCTLIMIT
+                mvlogger "PCT LIMIT USED: $PCTLIMIT"
+
+            fi
+            mvlogger "Threshold Used: $DEFAULTTHRESHOLD"
+
+            if [ "$SHAREPATH" = "/mnt/cache" ]; then
+                echo "Exiting, can't determine cache name used"
+
+            elif [ $POOLPCTUSED -gt $DEFAULTTHRESHOLD ]; then
+
+                #Base Find String
+                FINDSTR="find \"$SHAREPATH\" -depth"
+
+                #Add Age variables to find string
+                if [ "$AGE" -ge 1 ]; then
+                    mvlogger "Adding Age"
+                    mvlogger "Age ${AGE}"
+                    RAGE=$((AGE - 1))
+
+                    if [ "$CTIMEA" == "yes" ]; then
+                        FINDSTR+=" -ctime +$RAGE"
+
+                    else
+                        FINDSTR+=" -mtime +$RAGE"
+                    fi
                 fi
 
-		### Add Check to see if we need to move based on %, else exit.
-		PCTLIMIT=`cat /boot/config/plugins/ca.mover.tuning/ca.mover.tuning.cfg | grep $CACHEPOOLNAME"=" | rev | cut -c2-3 | rev`
-		mvlogger "$CACHEPOOLNAME Threshold Pct: $PCTLIMIT"
+                #Add Size to find string
+                if [ "$SIZE" -gt 0 ]; then
+                    mvlogger "Adding Size"
+                    mvlogger "Size ${SIZE}"
 
-		### Read in default threshold limit.
-		DFTPCTLIMIT=`cat /boot/config/plugins/ca.mover.tuning/ca.mover.tuning.cfg | grep threshold"=" | rev | cut -c2-3 | rev | tr -d '"'`
-		mvlogger "OVERALL Threshold: $DFTPCTLIMIT"
+                    FINDSTR+=" -size +${SIZE}M"
+                fi
 
-		SHAREPATH="/mnt/$CACHEPOOLNAME/$SHARENAME"
-		mvlogger "Share Path: $SHAREPATH"	
+                #Add Ignore Hidden Files to find string
+                if [ "$HIDDENFILES" == "yes" ]; then
+                    mvlogger "Adding Ignore Hidden Files"
+                    mvlogger "IgnoreHiddenFiles: ${HIDDENFILES}"
 
+                    FINDSTR+=" -not -path '*/\.*'"
+                fi
 
-		#Find the current percent of used size of pool.
-		if is_zfs_mountpoint_fstype "/mnt/$CACHEPOOLNAME" ; then
-			mvlogger "$CACHEPOOLNAME is zfs."
-			POOLPCTUSED=`zpool get -o value capacity $CACHEPOOLNAME | tail -n 1 | tr -d '%'`
-		else
-			POOLPCTUSED=`df --output=pcent /mnt/$CACHEPOOLNAME | tail -n 1 | tr -d '%'`
-		fi
-		mvlogger "Pool Pct Used: $POOLPCTUSED %"
+                #Add Size to find string
+                if [ "$SPARSENESS" -gt 0 ]; then
+                    mvlogger "Adding Sparseness"
+                    mvlogger "Size ${SPARSENESS}"
 
-		#Determine which percent limit we are going to use, in case ca.mover.tuning.cfg does not have a cachepool percent limit entry.
-		if [ -z "$PCTLIMIT" ] ; then
-			DEFAULTTHRESHOLD=$DFTPCTLIMIT
-			mvlogger "DFTPCT LIMIT USED FOR SETTING: $DFTPCTLIMIT"
+                    FINDSTR+=" -printf '%S:%p\0' | awk -v RS='\0' -F : '\$1 > 0.$SPARSENESS {sub(/^[^:]*:/, \"\"); print}'"
+                fi
 
-		else
-			DEFAULTTHRESHOLD=$PCTLIMIT
-			mvlogger "PCT LIMIT USED: $PCTLIMIT" 
+                #Add additional commands
+                #Add Skipfilelist to find string
+                if [ -n "$SKIPFILESLIST" ]; then
+                    mvlogger "Adding Skip File List"
+                    mvlogger "Skip File List Path: ${SKIPFILESLIST}"
 
-		fi
-		mvlogger "Threshold Used: $DEFAULTTHRESHOLD"
+                    FINDSTR+=" | grep -vFf '$SKIPFILESLIST'"
+                fi
 
+                mvlogger "Skipfiletypes string: $FINDSTR"
 
-		if [ "$SHAREPATH" = "/mnt/cache" ] ; then
-			echo "Exiting, can't determine cache name used"
+                if [ -n "$SKIPFILETYPES" ]; then
+                    FINDSTR+=" | grep -v"
+                    for i in $(echo $SKIPFILETYPES | sed "s/,/ /g"); do
+                        FINDSTR+=" -e '$i'"
+                    done
+                fi
 
-		elif [ $POOLPCTUSED -gt $DEFAULTTHRESHOLD ] ; then
-			
-                        #Base Find String
-                        FINDSTR="find \"$SHAREPATH\" -depth"
+                if [ -d "$SHAREPATH" ]; then
+                    eval "$FINDSTR>>$MOVER_FILELIST"
+                fi
 
-			#Add Age variables to find string
-			if [ "$AGE" -ge 1 ] ; then 
-				mvlogger "Adding Age"
-				mvlogger "Age ${AGE}"
-				RAGE=$((AGE-1))
+            else
+                mvlogger "Mover not Needed."
+                MOVENOTNEEDED="Mover Not Needed"
+            fi
 
-				if [ "$CTIMEA" == "yes" ] ; then
-					FINDSTR+=" -ctime +$RAGE"
-
-				else 
-					FINDSTR+=" -mtime +$RAGE"
-				fi
-			fi
-
-
-			#Add Size to find string
-			if [ "$SIZE" -gt 0 ] ; then 
-				mvlogger "Adding Size"
-				mvlogger "Size ${SIZE}"
-
-				FINDSTR+=" -size +${SIZE}M"
-			fi
-
-
-			#Add Ignore Hidden Files to find string
-                        if [ "$HIDDENFILES" == "yes" ] ; then
-                                mvlogger "Adding Ignore Hidden Files"
-                                mvlogger "IgnoreHiddenFiles: ${HIDDENFILES}"
-
-				FINDSTR+=" -not -path '*/\.*'"
-                        fi
-
-
-			#Add Size to find string
-			if [ "$SPARSENESS" -gt 0 ] ; then 
-				mvlogger "Adding Sparseness"
-				mvlogger "Size ${SPARSENESS}"
-
-				FINDSTR+=" -printf '%S:%p\0' | awk -v RS='\0' -F : '\$1 > 0.$SPARSENESS {sub(/^[^:]*:/, \"\"); print}'"
-			fi
-
-
-			#Add additional commands
-			#Add Skipfilelist to find string
-			if [ -n "$SKIPFILESLIST" ]; then 
-				mvlogger "Adding Skip File List"
-				mvlogger "Skip File List Path: ${SKIPFILESLIST}"
-
-				FINDSTR+=" | grep -vFf '$SKIPFILESLIST'"
-			fi
-
-			mvlogger "Skipfiletypes string: $FINDSTR"    
-
-			if [ -n "$SKIPFILETYPES" ]; then 
-				FINDSTR+=" | grep -v"
-				for i in $(echo $SKIPFILETYPES | sed "s/,/ /g")
-				do
-					FINDSTR+=" -e '$i'"
-				done
-			fi
-
-			if [ -d "$SHAREPATH" ]; then
-				eval "$FINDSTR>>$MOVER_FILELIST"
-			fi
-
-		else
-			mvlogger "Mover not Needed."
-			MOVENOTNEEDED="Mover Not Needed"
-		fi
-
-	fi
+        fi
+        #If overrideFLag set restore settings
+        if [ $overrideFlag = 1 ]; then
+            overrideFlag=0
+            mvlogger "-----Reverting-\"$SHARENAME\"-Mover-Settings-----"
+            setMoverSettings "$aa" "$bb" "$cc" "$dd" "$ee" "$ff" "$gg" "$hh" "$ii" "$jj" "$kk" "$ll" "$mm" #Restores the mover settings
+        fi
     done
 
     #Start Mover Items based on file list
-	
-	touch $MOVER_FILELIST
-	
-	customFilelist
-	mvlogger "after customFilelist"
-	totalsizeFilelist
-	mvlogger "After totalsizeFilelist"
-    	REMAININGCACHESIZE=$TOTALCACHESIZE
-    
-	#Write the first status as matching so we are at 0%
-	moverStatusWrite
 
-	#loopcustomFilelist
+    touch $MOVER_FILELIST
 
+    customFilelist
+    mvlogger "after customFilelist"
+    totalsizeFilelist
+    mvlogger "After totalsizeFilelist"
+    REMAININGCACHESIZE=$TOTALCACHESIZE
 
+    #Write the first status as matching so we are at 0%
+    moverStatusWrite
 
-  mvlogger "-----------------------------------------Running Array Files to Cache drives----------------------------------------------"
-mvlogger "Running to cache drive"
-  # Check for objects to move from array to pools
-  #Loop through each disk lookig for all shares.
-  touch $CACHE_FILELIST
-  for SHAREPATH in $(ls -dv /mnt/disk[0-9]*/*/) ; do
-    SHARE=$(basename "$SHAREPATH")
-    #Check to see if the share is set to preferr
-    if grep -qs 'shareUseCache="prefer"' "/boot/config/shares/${SHARE}.cfg" ; then
-      eval "$(grep -s shareCachePool /boot/config/shares/${SHARE}.cfg | tr -d '\r')"
-      #Check to see the config file has a cache pool assigned.  if not, assign "cache"
-      if [[ -z "$shareCachePool" ]]; then
-        shareCachePool="cache"
-      fi
-      #Check to see if the mount pool exists.  i.e. /mnt/cache
-      if [[ -d "/mnt/$shareCachePool" ]]; then
-		mvlogger "Moving files from Array to Cache!"
-		find "${SHAREPATH%/}" -depth>>$CACHE_FILELIST	
-      fi
+    #loopcustomFilelist
+
+    mvlogger "-----------------------------------------Running Array Files to Cache drives----------------------------------------------"
+    mvlogger "Running to cache drive"
+    # Check for objects to move from array to pools
+    #Loop through each disk lookig for all shares.
+    touch $CACHE_FILELIST
+    for SHAREPATH in $(ls -dv /mnt/disk[0-9]*/*/); do
+        SHARE=$(basename "$SHAREPATH")
+        #Check to see if the share is set to preferr
+        if grep -qs 'shareUseCache="prefer"' "/boot/config/shares/${SHARE}.cfg"; then
+            eval "$(grep -s shareCachePool /boot/config/shares/${SHARE}.cfg | tr -d '\r')"
+            #Check to see the config file has a cache pool assigned.  if not, assign "cache"
+            if [[ -z "$shareCachePool" ]]; then
+                shareCachePool="cache"
+            fi
+            #Check to see if the mount pool exists.  i.e. /mnt/cache
+            if [[ -d "/mnt/$shareCachePool" ]]; then
+                mvlogger "Moving files from Array to Cache!"
+                find "${SHAREPATH%/}" -depth >>$CACHE_FILELIST
+            fi
+        fi
+    done
+
+    mvlogger "File to Cache filelist created"
+
+    touch $CUSTOM_CACHE_FILELIST
+    #customCachelist - Write a custom filelist to CUSTOM_CACHE_FILELIST
+    customArrayFilelist
+    mvlogger "make customArray File List"
+
+    #Grab the total size of all files to be placed on the cache.
+    totalsizeArraylist
+
+    #Set remaing array size to totalarraysize to move. (i.e. making it 100% to move)
+    REMAININGARRAYSIZE=$TOTALARRAYSIZE
+
+    #Write the first status for 0%
+    moverStatusWrite
+    mvlogger "write first status file after to array"
+
+    #Set Total Number of files to Array and cache to update progress.
+    NUM_FILES_TO_ARRAY=$(tail -1 $CUSTOM_MOVER_FILELIST | sed -n 's/\([^;]*\).*/\1/p')
+    NUM_FILES_TO_CACHE=$(tail -1 $CUSTOM_CACHE_FILELIST | sed -n 's/\([^;]*\).*/\1/p')
+
+    #Loop Through Cache to array Mover fiels
+    loopcustomFilelist
+
+    #move the empty directories
+    loopdirectories
+
+    #loop through each file in the list of array files.
+    loopArrayFilelist
+
+    rm -f $PIDFILE
+    rm -f $SOFTSTOPFILE
+
+    [[ $LOGLEVEL -gt 0 ]] && echo "mover: finished"
+
+    #Run mover after script if specified.
+    if [ -z "$AFTERSCRIPT" ]; then
+        mvlogger "No After Script to Run."
+    else
+        if [ -f "$AFTERSCRIPT" ] && [ -x "$AFTERSCRIPT" ]; then
+            mvlogger "After script will be executed: $AFTERSCRIPT"
+            eval \"$AFTERSCRIPT\"
+        else
+            mvlogger "After script file does not exist or is not executable. Skipping."
+        fi
     fi
-  done
-
-mvlogger "File to Cache filelist created"
-
-  touch $CUSTOM_CACHE_FILELIST
-  #customCachelist - Write a custom filelist to CUSTOM_CACHE_FILELIST
-  customArrayFilelist
-mvlogger "make customArray File List"
-
-  #Grab the total size of all files to be placed on the cache.
-  totalsizeArraylist
-
-  #Set remaing array size to totalarraysize to move. (i.e. making it 100% to move)
-  REMAININGARRAYSIZE=$TOTALARRAYSIZE
-
-  #Write the first status for 0%
-  moverStatusWrite
-mvlogger "write first status file after to array"
-
-  #Set Total Number of files to Array and cache to update progress.
-  NUM_FILES_TO_ARRAY=$(tail -1 $CUSTOM_MOVER_FILELIST | sed -n 's/\([^;]*\).*/\1/p')
-  NUM_FILES_TO_CACHE=$(tail -1 $CUSTOM_CACHE_FILELIST | sed -n 's/\([^;]*\).*/\1/p')
-
-  #Loop Through Cache to array Mover fiels
-  loopcustomFilelist
-
-  #move the empty directories
-  loopdirectories
-
-  #loop through each file in the list of array files.
-  loopArrayFilelist
-
-  rm -f $PIDFILE
-  rm -f $SOFTSTOPFILE
-
-  [[ $LOGLEVEL -gt 0 ]] && echo "mover: finished"
-
-  #Run mover after script if specified.
-  if [ -z "$AFTERSCRIPT" ] ; then
-	mvlogger "No After Script to Run."
-  else
-	if [ -f "$AFTERSCRIPT" ] && [ -x "$AFTERSCRIPT" ] ; then
-		mvlogger "After script will be executed: $AFTERSCRIPT"
-      		eval \"$AFTERSCRIPT\"
-	else
-		mvlogger "After script file does not exist or is not executable. Skipping."
-	fi
-  fi
 
 }
 
 killtree() {
-  local pid=$1 child
-    
-  for child in $(pgrep -P $pid); do
-    killtree $child
-  done
-  [ $pid -ne $$ ] && kill -TERM $pid
+    local pid=$1 child
+
+    for child in $(pgrep -P $pid); do
+        killtree $child
+    done
+    [ $pid -ne $$ ] && kill -TERM $pid
 }
 
 # Caution: stopping mover like this can lead to partial files on the destination
 # and possible incomplete hard link transfer.  Not recommended to do this.
 stop() {
-  if [ ! -f $PIDFILE ]; then
-    echo "mover: not running"
-    exit 0
-  fi
-  killtree $(cat $PIDFILE)
-  sleep 2
-  rm -f $PIDFILE
-  echo "mover: stopped"
+    if [ ! -f $PIDFILE ]; then
+        echo "mover: not running"
+        exit 0
+    fi
+    killtree $(cat $PIDFILE)
+    sleep 2
+    rm -f $PIDFILE
+    echo "mover: stopped"
 }
 
 softstop() {
- echo "Soft Start Requested"
- touch $SOFTSTOPFILE
+    echo "Soft Start Requested"
+    touch $SOFTSTOPFILE
 }
 
 case $1 in
 start)
-  start
-  ;;
+    start
+    ;;
 stop)
-  stop
-  ;;
+    stop
+    ;;
 softstop)
- softstop
- ;;
+    softstop
+    ;;
 status)
-  [ -f $PIDFILE ]
-  ;;
+    [ -f $PIDFILE ]
+    ;;
 *)
-  # Default is "start"
-  # echo "Usage: $0 (start|stop|softstop|status)"
-  start
-  ;;
+    # Default is "start"
+    # echo "Usage: $0 (start|stop|softstop|status)"
+    start
+    ;;
 esac
-
-
