@@ -10,13 +10,13 @@ if ($var['shareCacheEnabled']!='yes') {
 }
 $plugin='ca.mover.tuning';
 $cfg = parse_plugin_cfg($plugin);
-$cronDisabled = ($cfg['force'] == "no") ? "disabled" : "";
-$ageDisabled = ($cfg['age'] == "no") ? "disabled" : "";
-$sizefDisabled = ($cfg['sizef'] == "no") ? "disabled" : "";
-$sparsnessfDisabled = ($cfg['sparsnessf'] == "no") ? "disabled" : "";
-$filetypesfDisabled = ($cfg['filetypesf'] == "no") ? "disabled" : "";
-$filelistfDisabled = ($cfg['filelistf'] == "no") ? "disabled" : "";
-$omoverthreshDisabled = ($cfg['omovercfg'] == "no") ? "disabled" : "";
+$cronDisabled = ($cfg['force'] != "yes") ? "disabled" : "";
+$ageDisabled = ($cfg['age'] != "yes") ? "disabled" : "";
+$sizefDisabled = ($cfg['sizef'] != "yes") ? "disabled" : "";
+$sparsnessfDisabled = ($cfg['sparsnessf'] != "yes") ? "disabled" : "";
+$filetypesfDisabled = ($cfg['filetypesf'] != "yes") ? "disabled" : "";
+$filelistfDisabled = ($cfg['filelistf'] != "yes") ? "disabled" : "";
+$omoverthreshDisabled = ($cfg['omovercfg'] != "yes") ? "disabled" : "";
 $om = $cfg['threshold'];
 $om = $om + 5;
 
@@ -89,7 +89,7 @@ Only move at this threshold of used cache space:
 > Set to the amount of disk space used on the cache drive for mover to run.
 
 Move files off cache based on age?
-: <select name="age" size='1' class='narrow' onchange=$(".myage").toggleAttr("disabled")>
+: <select name="age" size='1' class='narrow' onchange='$(".myage").toggleAttr("disabled")'>
        <?=mk_option($cfg['age'],'no','No')?>
        <?=mk_option($cfg['age'],'yes','Yes')?>
 </select>
@@ -123,7 +123,7 @@ Use CTIME:
 > Use CTIME instead of MTIME in the find command.
 
 Move files based on minimum size?
-: <select name="sizef" size='1' class='narrow' onchange=$(".mysizef").toggleAttr("disabled")>
+: <select name="sizef" size='1' class='narrow' onchange='$(".mysizef").toggleAttr("disabled")'>
        <?=mk_option($cfg['sizef'],'no','No')?>
        <?=mk_option($cfg['sizef'],'yes','Yes')?>
 </select>
@@ -150,7 +150,7 @@ Move files that are larger than this size (In M).
 </select>
 
 Move files off cache based on sparseness?
-: <select name="sparsnessf" size='1' class='narrow' onchange=$(".mysparsnessf").toggleAttr("disabled")>
+: <select name="sparsnessf" size='1' class='narrow' onchange='$(".mysparsnessf").toggleAttr("disabled")'>
        <?=mk_option($cfg['sparsnessf'],'no','No')?>
        <?=mk_option($cfg['sparsnessf'],'yes','Yes')?>
 </select>
@@ -174,25 +174,25 @@ Move files that are greather than this sparseness:
 
 
 Ignore files listed inside of a text file:
-: <select name='filelistf' size='1' class='narrow' onchange=$(".myfilelistf").toggleAttr("disabled");>
+: <select name='filelistf' size='1' class='narrow' onchange='$(".myfilelistf").toggleAttr("disabled")'>
 <?=mk_option($cfg['filelistf'],"no",'No')?>
 <?=mk_option($cfg['filelistf'],"yes","Yes")?>
 </select>
 
 File list path:
-: <input type='text' name='filelistv' size='1' class='narrow myfilelistf' <?=$filelistfDisabled?> value='<?=$cfg['filelistv']?>'>
+: <input type='text' name='filelistv' size='1' class='narrow myfilelistf' value='<?=$cfg['filelistv']?>' <?=$filelistfDisabled?>>
 
 > Full path to a file that contains a list of files you want ignored from being moved off the cache pool.
 
 
 Ignore file types:
-: <select name='filetypesf' size='1' class='narrow' onchange=$(".myfiletypesf").toggleAttr("disabled");>
+: <select name='filetypesf' size='1' class='narrow' onchange='$(".myfiletypesf").toggleAttr("disabled")'>
 <?=mk_option($cfg['filetypesf'],"no",'No')?>
 <?=mk_option($cfg['filetypesf'],"yes","Yes")?>
 </select>
 
-comma seperated list of file types:
-: <input type='text' name='filetypesv' size='1' class='narrow myfiletypesf' <?=$filetypesfDisabled?> value='<?=$cfg['filetypesv']?>'>
+Comma seperated list of file types:
+: <input type='text' name='filetypesv' size='1' class='narrow myfiletypesf' value='<?=$cfg['filetypesv']?>' <?=$filetypesfDisabled?>>
 
 > A list of file types seperated by a comma.
 
@@ -222,7 +222,7 @@ Log when not moving due to rules:
 > Enables or disables logging from this plugin
 
 Force move of all files on a schedule:
-: <select name='force' size='1' id='forceCron' class='narrow' onchange=$(".mycron").toggleAttr("disabled");>
+: <select name='force' size='1' id='forceCron' class='narrow' onchange='$(".mycron").toggleAttr("disabled")'>
 <?=mk_option($cfg['force'],"no",'No')?>
 <?=mk_option($cfg['force'],"yes","Yes")?>
 </select>
@@ -230,7 +230,7 @@ Force move of all files on a schedule:
 > Select yes to run original mover on a custom cron schedule.
 
 Cron Schedule to force move all of files:
-: <input type='text' id='cronSchedule' name='cron' size='1' class='narrow mycron' <?=$cronDisabled?> value='<?=$cfg['cron']?>'>
+: <input type='text' id='cronSchedule' name='cron' size='1' class='narrow mycron' value='<?=$cfg['cron']?>' <?=$cronDisabled?>>
 
 > Cron Schedule entry example 20 4 1 * *   To run the first day of the month at 4:20 AM  
 
@@ -267,9 +267,9 @@ Script to run after mover (No checks, always runs):
 > Path to a script that will be run after mover finishes.  This script will always be run.
 
 Move All from Cache-Yes shares when disk is above a certain percentage:
-: <select name='omovercfg' size='1' class='narrow' onchange=$(".myomthresh").toggleAttr("disabled")>
-<?=mk_option($cfg['omovercfg'],"yes","Yes")?>
+: <select name='omovercfg' size='1' class='narrow' onchange='$(".myomthresh").toggleAttr("disabled")'>
 <?=mk_option($cfg['omovercfg'],"no","No")?>
+<?=mk_option($cfg['omovercfg'],"yes","Yes")?>
 </select>
 
 > Set to "Yes" if you want to move all files from a Cache-Yes share to the array if the percentage below is exceeded.  This is similar to the original mover and does not apply any filters from this plug-in to the find command sent to the mover binary.
