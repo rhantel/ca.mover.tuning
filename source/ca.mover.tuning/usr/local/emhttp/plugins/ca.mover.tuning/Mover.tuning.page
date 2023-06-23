@@ -268,8 +268,8 @@ Script to run after mover (No checks, always runs):
 
 Move All from Cache-Yes shares when disk is above a certain percentage:
 : <select name='omovercfg' size='1' class='narrow' onchange='$(".myomthresh").toggleAttr("disabled")'>
-<?=mk_option($cfg['omovercfg'],"yes","Yes")?>
 <?=mk_option($cfg['omovercfg'],"no","No")?>
+<?=mk_option($cfg['omovercfg'],"yes","Yes")?>
 </select>
 
 > Set to "Yes" if you want to move all files from a Cache-Yes share to the array if the percentage below is exceeded.  This is similar to the original mover and does not apply any filters from this plug-in to the find command sent to the mover binary.
