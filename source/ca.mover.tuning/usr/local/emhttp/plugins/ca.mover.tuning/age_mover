@@ -396,8 +396,8 @@ mvallfrompool() {
             for SHAREPATH in $POOLPATH/*/; do
                 SHARE=$(basename "$SHAREPATH")
                 if grep -qs 'shareUseCache="yes"' "/boot/config/shares/${SHARE}.cfg"; then
-                    cfgPath="/boot/config/plugins/ca.mover.tuning/shareOverrideConfig/$SHARENAME.cfg"
-                    if [ -f $cfgPath ] && grep -qs 'omovercfg="no"' "$cfgPath"; then
+                    cfgPath="/boot/config/plugins/ca.mover.tuning/shareOverrideConfig/$SHARE.cfg"
+                    if [ -f $cfgPath ] && ! grep -qs 'omovercfg="yes"' "$cfgPath"; then
                         #Skip this share
                         if [ "$TESTMODE" = "yes" ]; then
                             mvlogger "Running in Test Mode: \"$SHARE\" skipped."
@@ -480,7 +480,7 @@ setMoverSettings() {
     else
         ###echo "Skipfiletypes supplied"
         SKIPFILETYPES=$6
-        SKIPFILETYPES=$(echo $SKIPFILETYPES | sed 's/ *$//g')
+        SKIPFILETYPES=$(echo "$SKIPFILETYPES" | awk -F, '{for(i=1;i<=NF;i++) {gsub(/ /, "", $i); if ($i !~ /^\./) $i = "."$i; printf "%s%s", $i, (i<NF?",":"")}}')
         mvlogger "SKIP FILE TYPES: $SKIPFILETYPES"
     fi
 
@@ -567,6 +567,12 @@ start() {
     if [ -e $SOFTSTOPFILE ]; then
         rm $SOFTSTOPFILE
         echo "Mover soft stop file removed."
+    fi
+
+    #Check to see if /usr/local/sbin/move exists.  Moved in 6.12.0 from /usr/local/bin/move to /usr/local/sbin/move
+    if [ ! -e /usr/local/sbin/move ]; then
+	echo "/usr/local/sbin/move does not exists, creating soft link"
+	ln -s /usr/local/bin/move /usr/local/sbin/move
     fi
 
     echo $$ >/var/run/mover.pid
@@ -721,9 +727,9 @@ start() {
                 mvlogger "Skipfiletypes string: $FINDSTR"
 
                 if [ -n "$SKIPFILETYPES" ]; then
-                    FINDSTR+=" | grep -v"
+                    FINDSTR+=" | grep -iv"
                     for i in $(echo $SKIPFILETYPES | sed "s/,/ /g"); do
-                        FINDSTR+=" -e '$i'"
+                        FINDSTR+=" -e '\\$i'"
                     done
                 fi
 
