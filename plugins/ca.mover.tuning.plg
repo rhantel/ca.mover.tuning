@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "hugenbdd">
-<!ENTITY version   "2023.06.21">
-<!ENTITY md5       "bca236d2866fd3693d039d95f59d2f9e">
+<!ENTITY version   "2023.07.02">
+<!ENTITY md5       "9bd1696f85057243982c285200946206">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,12 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2023.07.02
+- Add check & creation of link to new binary move location. (Allows the plugin to survive a reboot)
+- Fix first time save on scheduler page. (Swarles/Yamraid 6/21)
+- Change "move all" default setting to No to not confuse new installs/users. (Swarles)
+- Custom mover tuning settings for individual shares. Located at “Shares>[click share]>Mover Tuning”. Includes age, size, sparseness, file list, file types, hidden files/directories, move all override. (Swarles 6/2023)
+
 ###2023.06.21
 - Fix spaces in before script file path (Swarles 6-18-2023)
 - Fix spaces in after script file path (Swarles 6-18-2023)
