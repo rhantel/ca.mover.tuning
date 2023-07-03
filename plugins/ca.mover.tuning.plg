@@ -14,7 +14,7 @@
 
 <CHANGES>
 ###2023.07.03
-- Add check & creation of link to new binary move location. (Allows the plugin to survive a reboot)
+- Add check and creation of link to new binary move location. (Allows the plugin to survive a reboot)
 - Fix first time save on scheduler page. (Swarles/Yamraid 6/21)
 - Change "move all" default setting to No to not confuse new installs/users. (Swarles)
 - Custom mover tuning settings for individual shares. Located at “Shares>[click share]>Mover Tuning”. Includes age, size, sparseness, file list, file types, hidden files/directories, move all override. (Swarles 6/2023)
