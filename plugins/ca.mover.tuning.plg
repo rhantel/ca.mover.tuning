@@ -2,7 +2,7 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "hugenbdd">
-<!ENTITY version   "2023.07.02">
+<!ENTITY version   "2023.07.03">
 <!ENTITY md5       "9bd1696f85057243982c285200946206">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
@@ -13,7 +13,7 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
-###2023.07.02
+###2023.07.03
 - Add check & creation of link to new binary move location. (Allows the plugin to survive a reboot)
 - Fix first time save on scheduler page. (Swarles/Yamraid 6/21)
 - Change "move all" default setting to No to not confuse new installs/users. (Swarles)
