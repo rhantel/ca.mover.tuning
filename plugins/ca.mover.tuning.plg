@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "hugenbdd">
-<!ENTITY version   "2023.07.03">
-<!ENTITY md5       "9bd1696f85057243982c285200946206">
+<!ENTITY version   "2023.08.22">
+<!ENTITY md5       "b8233a47b45e15a10858473215fbd74f">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,11 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2023.08.22
+- Fixed Cron Job entry
+- Modified ignore command to include folders (Swarles)
+- Updated mover cmdline functions (Hugenbdd)
+
 ###2023.07.03
 - Add check and creation of link to new binary move location. (Allows the plugin to survive a reboot)
 - Fix first time save on scheduler page. (Swarles/Yamraid 6/21)
