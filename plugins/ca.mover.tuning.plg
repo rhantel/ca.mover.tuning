@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
 <!ENTITY author    "hugenbdd">
-<!ENTITY version   "2023.08.22">
-<!ENTITY md5       "b8233a47b45e15a10858473215fbd74f">
+<!ENTITY version   "2023.12.19">
+<!ENTITY md5       "9a97a2257926ea7cd2b1619903f21fa8">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY github    "hugenbd/ca.mover.tuning">
@@ -13,6 +13,12 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" icon="music" min="6.9.0-rc2">
 
 <CHANGES>
+###2023.12.19
+- Change "while read" lines in age_mover to "while IFS= read -r" to fix trailing white spaces (Swarles)
+- Fix where sometimes mover would not run to mover.old scrip (Swarles)
+- Log if "share.cfg" doesn't exists to help trouble shooting (Swarles)
+- Check for ca.mover.tuning.cfg file and additional logging. (Swarles)
+
 ###2023.08.22
 - Fixed Cron Job entry
 - Modified ignore command to include folders (Swarles)
