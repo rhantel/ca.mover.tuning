@@ -93,7 +93,7 @@ fi
                                 eval "$FINDSTR"
                         else
                                 #Add Mover to find string
-                                FINDSTR+=" | /usr/local/sbin/move -d $LOGLEVEL"
+                                FINDSTR+=" | /usr/libexec/unraid/move -d $LOGLEVEL"
                                 mvlogger "Complete Mover Command: $FINDSTR"
                                 eval " $FINDSTR"
                         fi
