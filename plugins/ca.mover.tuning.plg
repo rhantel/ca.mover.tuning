@@ -1,12 +1,12 @@
 <?xml version='1.0' standalone='yes'?>
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "ca.mover.tuning">
-<!ENTITY author    "hugenbdd">
-<!ENTITY version   "2023.12.19">
-<!ENTITY md5       "9a97a2257926ea7cd2b1619903f21fa8">
+<!ENTITY author    "rhantel">
+<!ENTITY version   "2025.01.22">
+<!ENTITY md5       "">
 <!ENTITY launch    "Settings/Scheduler">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
-<!ENTITY github    "hugenbd/ca.mover.tuning">
+<!ENTITY github    "rhantel/ca.mover.tuning">
 <!ENTITY pluginURL "https://raw.githubusercontent.com/&github;/master/plugins/&name;.plg">
 ]>
 
@@ -104,7 +104,7 @@ The 'source' file.
 -->
 <FILE Name="/boot/config/plugins/&name;/&name;-&version;-x86_64-1.txz" Run="upgradepkg --install-new">
 <URL>https://raw.github.com/&github;/master/archive/&name;-&version;-x86_64-1.txz</URL>
-<MD5>&md5;</MD5>
+<!--<MD5>&md5;</MD5>-->
 </FILE>
 
 <!--
